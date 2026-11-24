@@ -21,7 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\" />
+    <None Remove="**\.gitkeep" />
+    <Folder Include="Features\History\" />
+    <Folder Include="Features\Library\" />
+    <Folder Include="Features\OsImageLauncher\" />
+    <Folder Include="Features\Settings\" />
+    <Folder Include="Features\Shell\" />
+    <Folder Include="Features\SmartAdder\" />
+    <Folder Include="Features\TransferQueue\" />
+    <Folder Include="Shared\Configuration\" />
+    <Folder Include="Shared\Messages\" />
+    <Folder Include="Shared\Persistence\" />
+    <Folder Include="Shared\Platform\" />
+    <Folder Include="Shared\UI\" />
   </ItemGroup>
 
 </Project>
