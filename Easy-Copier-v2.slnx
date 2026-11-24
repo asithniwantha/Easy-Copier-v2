@@ -1,13 +1,9 @@
 <Solution>
   <Configurations>
-    <Platform Name="ARM64" />
     <Platform Name="x64" />
-    <Platform Name="x86" />
   </Configurations>
   <Project Path="Easy-Copier-v2/Easy-Copier-v2.csproj">
-    <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
-    <Platform Solution="*|x86" Project="x86" />
-    <Deploy />
   </Project>
+  <Project Path="EasyCopier.Tests/EasyCopier.Tests.csproj" />
 </Solution>
