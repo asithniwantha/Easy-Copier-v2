@@ -1,8 +1,5 @@
 {
   "profiles": {
-    "Easy-Copier-v2 (Package)": {
-      "commandName": "MsixPackage"
-    },
     "Easy-Copier-v2 (Unpackaged)": {
       "commandName": "Project"
     }
