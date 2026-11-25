@@ -1,7 +1,9 @@
+using Microsoft.UI;
+
 namespace EasyCopier.Shared.Platform;
 
 /// <summary>
-/// Defines a contract for accessing window and XAML root context UI elements without direct coupling.
+/// Defines a contract for accessing window handles, <see cref="WindowId"/>, and XAML root context without leaking raw WinUI controls.
 /// </summary>
 public interface IAppWindowContext
 {
@@ -14,5 +16,14 @@ public interface IAppWindowContext
     /// Gets the primary XAML root object for displaying content dialogs and overlays.
     /// </summary>
     object? MainXamlRoot { get; }
-}
 
+    /// <summary>
+    /// Gets the WinUI <see cref="WindowId"/> of the primary application window, or default if unavailable.
+    /// </summary>
+    WindowId MainWindowId { get; }
+
+    /// <summary>
+    /// Gets the active process <see cref="WindowId"/>, falling back to <see cref="MainWindowId"/> when elevated or inactive.
+    /// </summary>
+    WindowId ActiveWindowId { get; }
+}

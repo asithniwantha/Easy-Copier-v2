@@ -27,6 +27,19 @@
     <Compile Include="..\Easy-Copier-v2\Shared\Messages\*.cs" Link="Linked\Shared\Messages\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Shared\Models\*.cs" Link="Linked\Shared\Models\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Shared\Persistence\*.cs" Link="Linked\Shared\Persistence\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\CloseableViewModelBase.cs" Link="Linked\Shared\Platform\CloseableViewModelBase.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IAudioPlaybackService.cs" Link="Linked\Shared\Platform\IAudioPlaybackService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IClipboardService.cs" Link="Linked\Shared\Platform\IClipboardService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\ICloseableViewModel.cs" Link="Linked\Shared\Platform\ICloseableViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IDialogService.cs" Link="Linked\Shared\Platform\IDialogService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IDispatcherService.cs" Link="Linked\Shared\Platform\IDispatcherService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFilePickerService.cs" Link="Linked\Shared\Platform\IFilePickerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFileSystemService.cs" Link="Linked\Shared\Platform\IFileSystemService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFolderPickerService.cs" Link="Linked\Shared\Platform\IFolderPickerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IProcessService.cs" Link="Linked\Shared\Platform\IProcessService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\ITransferActivityMonitor.cs" Link="Linked\Shared\Platform\ITransferActivityMonitor.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IWindowService.cs" Link="Linked\Shared\Platform\IWindowService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\FileSystemService.cs" Link="Linked\Shared\Platform\FileSystemService.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\UI\Helpers\*.cs" Link="Linked\Shared\UI\Helpers\%(Filename)%(Extension)" />
   </ItemGroup>
 

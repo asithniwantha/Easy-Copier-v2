@@ -1,15 +1,12 @@
-using EasyCopier.Shared.Interop;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.UI;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage.Pickers;
-using WinRT.Interop;
 
 namespace EasyCopier.Shared.Platform;
 
 /// <summary>
-/// Implements folder selection operations using WinRT <see cref="FolderPicker"/>.
+/// Implements elevated-safe folder selection operations using <see cref="FolderPicker"/> initialized with <see cref="WindowId"/>.
 /// </summary>
 public class FolderPickerService : IFolderPickerService
 {
@@ -30,9 +27,7 @@ public class FolderPickerService : IFolderPickerService
         _logger = logger ?? NullLogger<FolderPickerService>.Instance;
     }
 
-    /// <summary>
-    /// Displays a folder picker modal dialog allowing the user to select a target directory.
-    /// </summary>
+    /// <inheritdoc />
     public async Task<string?> PickFolderAsync(string? startingDirectory = null)
     {
         TaskCompletionSource<string?> tcs = new();
@@ -41,24 +36,13 @@ public class FolderPickerService : IFolderPickerService
         {
             try
             {
-                nint windowHandle = NativeWindowHelper.GetActiveWindowHandle();
-                if (windowHandle == IntPtr.Zero)
+                WindowId windowId = _appWindowContext.ActiveWindowId;
+                if (windowId.Value == 0)
                 {
-                    _logger.LogWarning("NativeWindowHelper.GetActiveWindowHandle() returned IntPtr.Zero. Falling back to MainWindow handle.");
-                    if (_appWindowContext.MainWindow is Window mainWindow)
-                    {
-                        windowHandle = WindowNative.GetWindowHandle(mainWindow);
-                    }
-                }
-
-                if (windowHandle == IntPtr.Zero)
-                {
-                    _logger.LogError("Unable to retrieve a valid window handle for FolderPicker.");
+                    _logger.LogError("Unable to retrieve a valid WindowId for FolderPicker.");
                     tcs.SetResult(null);
                     return;
                 }
-
-                WindowId windowId = Win32Interop.GetWindowIdFromWindow(windowHandle);
 
                 FolderPicker folderPicker = new(windowId)
                 {
@@ -85,4 +69,3 @@ public class FolderPickerService : IFolderPickerService
         return await tcs.Task;
     }
 }
-

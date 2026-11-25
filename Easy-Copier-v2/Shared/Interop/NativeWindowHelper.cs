@@ -224,6 +224,25 @@ public static partial class NativeWindowHelper
     }
 
     /// <summary>
+    /// Anchors a secondary child window's HWND owner to <paramref name="ownerWindow"/> when both handles are valid.
+    /// </summary>
+    public static void EnsureOwner(Window childWindow, Window? ownerWindow)
+    {
+        ArgumentNullException.ThrowIfNull(childWindow);
+        if (ownerWindow == null)
+        {
+            return;
+        }
+
+        IntPtr childHwnd = WindowNative.GetWindowHandle(childWindow);
+        IntPtr ownerHwnd = WindowNative.GetWindowHandle(ownerWindow);
+        if (childHwnd != IntPtr.Zero && ownerHwnd != IntPtr.Zero)
+        {
+            SetOwner(childHwnd, ownerHwnd);
+        }
+    }
+
+    /// <summary>
     /// Configures and shows a child window modally with respect to an owner window.
     /// </summary>
     public static void ShowAsModal(Window childWindow, Window? ownerWindow)

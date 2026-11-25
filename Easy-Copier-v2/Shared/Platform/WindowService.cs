@@ -1,9 +1,11 @@
+using EasyCopier.Shared.Interop;
 using Microsoft.UI.Xaml;
 
 namespace EasyCopier.Shared.Platform;
 
 /// <summary>
 /// Implements decoupled window creation and activation using slice-contributed <see cref="WindowRegistration"/> factories.
+/// Secondary windows are recreated fresh per call and anchored to <c>MainWindow</c> via HWND ownership.
 /// </summary>
 public class WindowService : IWindowService
 {
@@ -38,7 +40,10 @@ public class WindowService : IWindowService
             throw new InvalidOperationException("Cannot open a secondary window before MainWindow is available.");
         }
 
+        // Always instantiate a fresh Window via DI factory rather than hiding/reusing closed WinUI Window objects.
         Window window = createWindow(owner, parameter);
+        NativeWindowHelper.EnsureOwner(window, owner);
+
         if (onClosed != null)
         {
             window.Closed += (_, _) => onClosed();
@@ -47,4 +52,3 @@ public class WindowService : IWindowService
         window.Activate();
     }
 }
-

@@ -1,22 +1,47 @@
+using EasyCopier.Shared.Interop;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
+using WinRT.Interop;
 
 namespace EasyCopier.Shared.Platform;
 
 /// <summary>
-/// Provides access to the main application window context and XAML root element.
+/// Provides access to the main application window context, active <see cref="WindowId"/>, and XAML root element.
 /// </summary>
 public class AppWindowContext : IAppWindowContext
 {
-    /// <summary>
-    /// Gets the current main application window object.
-    /// </summary>
-    public object? MainWindow => App.Current.MainWindow;
+    /// <inheritdoc />
+    public object? MainWindow => Application.Current is App app ? app.MainWindow : null;
 
-    /// <summary>
-    /// Gets the main XAML root element of the main window content, if available.
-    /// </summary>
-    public object? MainXamlRoot => App.Current.MainWindow?.Content is FrameworkElement rootElement
+    /// <inheritdoc />
+    public object? MainXamlRoot => MainWindow is Window { Content: FrameworkElement rootElement }
         ? rootElement.XamlRoot
         : null;
-}
 
+    /// <inheritdoc />
+    public WindowId MainWindowId
+    {
+        get
+        {
+            if (MainWindow is not Window mainWindow)
+            {
+                return default;
+            }
+
+            nint hwnd = WindowNative.GetWindowHandle(mainWindow);
+            return hwnd == IntPtr.Zero ? default : Win32Interop.GetWindowIdFromWindow(hwnd);
+        }
+    }
+
+    /// <inheritdoc />
+    public WindowId ActiveWindowId
+    {
+        get
+        {
+            nint hwnd = NativeWindowHelper.GetActiveWindowHandle();
+            return hwnd != IntPtr.Zero
+                ? Win32Interop.GetWindowIdFromWindow(hwnd)
+                : MainWindowId;
+        }
+    }
+}

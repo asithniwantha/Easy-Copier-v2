@@ -1,5 +1,3 @@
-using Microsoft.UI.Xaml;
-
 namespace EasyCopier.Shared.Platform;
 
 /// <summary>
@@ -66,13 +64,6 @@ public static class SettingsOpenActionExtensions
 }
 
 /// <summary>
-/// Represents a slice-contributed window factory registration for <see cref="IWindowService"/>.
-/// </summary>
-/// <param name="Kind">The window kind handled by this registration.</param>
-/// <param name="CreateWindow">Factory creating a fresh <see cref="Window"/> instance anchored to the owner window.</param>
-public sealed record WindowRegistration(AppWindowKind Kind, Func<Window, object?, Window> CreateWindow);
-
-/// <summary>
 /// Provides abstract methods for creating and displaying secondary windows in the application.
 /// </summary>
 public interface IWindowService
@@ -85,4 +76,3 @@ public interface IWindowService
     /// <param name="onClosed">Optional callback invoked when the created window closes.</param>
     void ShowWindow(AppWindowKind kind, object? parameter = null, Action? onClosed = null);
 }
-

@@ -1,15 +1,12 @@
-using EasyCopier.Shared.Interop;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.UI;
-using Microsoft.UI.Xaml;
 using Microsoft.Windows.Storage.Pickers;
-using WinRT.Interop;
 
 namespace EasyCopier.Shared.Platform;
 
 /// <summary>
-/// Implements file picker operations using WinRT <see cref="FileOpenPicker"/> and <see cref="FileSavePicker"/>.
+/// Implements elevated-safe file picker operations using <see cref="FileOpenPicker"/> and <see cref="FileSavePicker"/> initialized with <see cref="WindowId"/>.
 /// </summary>
 public class FilePickerService : IFilePickerService
 {
@@ -41,19 +38,13 @@ public class FilePickerService : IFilePickerService
         {
             try
             {
-                nint windowHandle = NativeWindowHelper.GetActiveWindowHandle();
-                if (windowHandle == IntPtr.Zero && _appWindowContext.MainWindow is Window mainWindow)
+                WindowId windowId = _appWindowContext.ActiveWindowId;
+                if (windowId.Value == 0)
                 {
-                    windowHandle = WindowNative.GetWindowHandle(mainWindow);
-                }
-
-                if (windowHandle == IntPtr.Zero)
-                {
+                    _logger.LogError("Unable to retrieve a valid WindowId for FileOpenPicker.");
                     tcs.SetResult(null);
                     return;
                 }
-
-                WindowId windowId = Win32Interop.GetWindowIdFromWindow(windowHandle);
 
                 FileOpenPicker openPicker = new(windowId)
                 {
@@ -71,12 +62,14 @@ public class FilePickerService : IFilePickerService
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error occurred while showing FileOpenPicker.");
                 tcs.SetException(ex);
             }
         });
 
         if (!enqueued)
         {
+            _logger.LogError("Failed to enqueue FileOpenPicker display on UI thread dispatcher.");
             tcs.SetResult(null);
         }
 
@@ -94,24 +87,13 @@ public class FilePickerService : IFilePickerService
         {
             try
             {
-                nint windowHandle = NativeWindowHelper.GetActiveWindowHandle();
-                if (windowHandle == IntPtr.Zero)
+                WindowId windowId = _appWindowContext.ActiveWindowId;
+                if (windowId.Value == 0)
                 {
-                    _logger.LogWarning("NativeWindowHelper.GetActiveWindowHandle() returned IntPtr.Zero. Falling back to MainWindow handle.");
-                    if (_appWindowContext.MainWindow is Window mainWindow)
-                    {
-                        windowHandle = WindowNative.GetWindowHandle(mainWindow);
-                    }
-                }
-
-                if (windowHandle == IntPtr.Zero)
-                {
-                    _logger.LogError("Unable to retrieve a valid window handle for FileSavePicker.");
+                    _logger.LogError("Unable to retrieve a valid WindowId for FileSavePicker.");
                     tcs.SetResult(null);
                     return;
                 }
-
-                WindowId windowId = Win32Interop.GetWindowIdFromWindow(windowHandle);
 
                 FileSavePicker savePicker = new(windowId)
                 {
@@ -143,4 +125,3 @@ public class FilePickerService : IFilePickerService
         return await tcs.Task;
     }
 }
-
