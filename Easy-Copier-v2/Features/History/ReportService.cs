@@ -19,7 +19,7 @@ public class ReportService(ILogger<ReportService> logger) : IReportService
         try
         {
             await using StreamWriter writer = new(filePath, false, Encoding.UTF8);
-            await writer.WriteLineAsync("Id,Timestamp,GameName,TargetDriveLetter,TargetDriveLabel,BytesTransferred,IsSuccess,Amount,SourcePath,DestinationPath,ErrorLog,SubFilesJson").ConfigureAwait(false);
+            await writer.WriteLineAsync("Id,Timestamp,GameName,TargetDriveLetter,TargetDriveLabel,BytesTransferred,IsSuccess,Amount,SourcePath,DestinationPath,ErrorLog,SubFilesJson,DurationMs,StatusText").ConfigureAwait(false);
 
             foreach (CopyHistoryRecord record in records)
             {
@@ -35,8 +35,10 @@ public class ReportService(ILogger<ReportService> logger) : IReportService
                 string destinationPath = EscapeCsv(record.DestinationPath);
                 string errorLog = EscapeCsv(record.ErrorLog);
                 string subFilesJson = EscapeCsv(record.SubFilesJson);
+                string durationMs = record.DurationMs.ToString(CultureInfo.InvariantCulture);
+                string statusText = EscapeCsv(record.DisplayStatusText);
 
-                await writer.WriteLineAsync($"{id},{timestamp},{gameName},{targetDriveLetter},{targetDriveLabel},{bytesTransferred},{isSuccess},{amount},{sourcePath},{destinationPath},{errorLog},{subFilesJson}").ConfigureAwait(false);
+                await writer.WriteLineAsync($"{id},{timestamp},{gameName},{targetDriveLetter},{targetDriveLabel},{bytesTransferred},{isSuccess},{amount},{sourcePath},{destinationPath},{errorLog},{subFilesJson},{durationMs},{statusText}").ConfigureAwait(false);
             }
 
             _logger.LogInformation("Successfully exported history to {FilePath}", filePath);

@@ -16,6 +16,9 @@ namespace EasyCopier.Features.History;
 /// </summary>
 public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<TransferBatchCompletedMessage>, IDisposable
 {
+    private const string SelectColumns =
+        "Id, Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson, DurationMs, StatusText";
+
     private readonly ISqliteConnectionFactory _connectionFactory;
     private readonly IMessenger _messenger;
     private readonly ILogger<CopyHistoryService> _logger;
@@ -60,7 +63,9 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                     SourcePath TEXT NOT NULL DEFAULT '',
                     DestinationPath TEXT NOT NULL DEFAULT '',
                     ErrorLog TEXT NOT NULL DEFAULT '',
-                    SubFilesJson TEXT NOT NULL DEFAULT ''
+                    SubFilesJson TEXT NOT NULL DEFAULT '',
+                    DurationMs INTEGER NOT NULL DEFAULT 0,
+                    StatusText TEXT NOT NULL DEFAULT ''
                 )";
 
             _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -79,7 +84,6 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
             {
                 command.CommandText = "ALTER TABLE CopyHistory ADD COLUMN Amount INTEGER NOT NULL DEFAULT 0";
                 _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                _logger.LogInformation("Added 'Amount' column to CopyHistory table via schema migration.");
             }
 
             if (!existingColumns.Contains("SourcePath"))
@@ -92,7 +96,20 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                 command.CommandText = "ALTER TABLE CopyHistory ADD COLUMN SubFilesJson TEXT NOT NULL DEFAULT ''";
                 _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
-                _logger.LogInformation("Added details columns to CopyHistory table via schema migration.");
+            }
+
+            if (!existingColumns.Contains("DurationMs"))
+            {
+                command.CommandText = "ALTER TABLE CopyHistory ADD COLUMN DurationMs INTEGER NOT NULL DEFAULT 0";
+                _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                _logger.LogInformation("Added 'DurationMs' column to CopyHistory table via schema migration.");
+            }
+
+            if (!existingColumns.Contains("StatusText"))
+            {
+                command.CommandText = "ALTER TABLE CopyHistory ADD COLUMN StatusText TEXT NOT NULL DEFAULT ''";
+                _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
+                _logger.LogInformation("Added 'StatusText' column to CopyHistory table via schema migration.");
             }
 
             command.CommandText = "CREATE INDEX IF NOT EXISTS idx_copyhistory_timestamp ON CopyHistory (Timestamp DESC);";
@@ -130,6 +147,11 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
         {
             foreach (TransferCompletedItemDescriptor item in message.ItemResults)
             {
+                long durationMs = (long)Math.Max(0, (item.Duration == TimeSpan.Zero ? message.Duration : item.Duration).TotalMilliseconds);
+                string statusText = !string.IsNullOrWhiteSpace(item.StatusText)
+                    ? item.StatusText
+                    : item.IsSuccess ? "Completed" : "Failed";
+
                 CopyHistoryRecord record = new(
                     Id: 0,
                     Timestamp: item.Timestamp == default ? DateTime.Now : item.Timestamp,
@@ -142,7 +164,9 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                     SourcePath: item.SourcePath,
                     DestinationPath: item.DestinationPath,
                     ErrorLog: item.ErrorLog,
-                    SubFilesJson: item.SubFilesJson)
+                    SubFilesJson: item.SubFilesJson,
+                    DurationMs: durationMs,
+                    StatusText: statusText)
                 {
                     BatchAmount = item.BatchAmount
                 };
@@ -153,6 +177,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
         else
         {
             int totalItems = message.SuccessCount + message.FailureCount;
+            bool isSuccess = message.FailureCount == 0;
             CopyHistoryRecord summary = new(
                 Id: 0,
                 Timestamp: DateTime.Now,
@@ -160,8 +185,10 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 TargetDriveLetter: message.TargetDriveLetter,
                 TargetDriveLabel: message.TargetDriveLabel,
                 BytesTransferred: message.TotalBytesTransferred,
-                IsSuccess: message.FailureCount == 0,
-                Amount: 0);
+                IsSuccess: isSuccess,
+                Amount: 0,
+                DurationMs: (long)Math.Max(0, message.Duration.TotalMilliseconds),
+                StatusText: isSuccess ? "Completed" : "Failed");
 
             await AddRecordAsync(summary).ConfigureAwait(false);
         }
@@ -174,14 +201,18 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
     {
         ArgumentNullException.ThrowIfNull(record);
 
+        string normalizedStatus = !string.IsNullOrWhiteSpace(record.StatusText)
+            ? record.StatusText
+            : record.IsSuccess ? "Completed" : "Failed";
+
         await _writeLock.WaitAsync().ConfigureAwait(false);
         try
         {
             await using SqliteConnection connection = await _connectionFactory.CreateOpenConnectionAsync().ConfigureAwait(false);
             await using SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"
-                INSERT INTO CopyHistory (Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson)
-                VALUES ($timestamp, $gameName, $targetDriveLetter, $targetDriveLabel, $bytesTransferred, $isSuccess, $amount, $sourcePath, $destinationPath, $errorLog, $subFilesJson)";
+                INSERT INTO CopyHistory (Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson, DurationMs, StatusText)
+                VALUES ($timestamp, $gameName, $targetDriveLetter, $targetDriveLabel, $bytesTransferred, $isSuccess, $amount, $sourcePath, $destinationPath, $errorLog, $subFilesJson, $durationMs, $statusText)";
 
             _ = command.Parameters.AddWithValue("$timestamp", record.Timestamp.ToString("O", CultureInfo.InvariantCulture));
             _ = command.Parameters.AddWithValue("$gameName", record.GameName);
@@ -194,6 +225,8 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
             _ = command.Parameters.AddWithValue("$destinationPath", record.DestinationPath);
             _ = command.Parameters.AddWithValue("$errorLog", record.ErrorLog);
             _ = command.Parameters.AddWithValue("$subFilesJson", record.SubFilesJson);
+            _ = command.Parameters.AddWithValue("$durationMs", Math.Max(0, record.DurationMs));
+            _ = command.Parameters.AddWithValue("$statusText", normalizedStatus);
 
             _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
@@ -216,8 +249,8 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
             await using SqliteConnection connection = await _connectionFactory.CreateOpenConnectionAsync().ConfigureAwait(false);
             await using SqliteCommand command = connection.CreateCommand();
             command.CommandText = whereClause != null
-                ? $"SELECT Id, Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson FROM CopyHistory WHERE {whereClause} ORDER BY Timestamp DESC"
-                : "SELECT Id, Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson FROM CopyHistory ORDER BY Timestamp DESC";
+                ? $"SELECT {SelectColumns} FROM CopyHistory WHERE {whereClause} ORDER BY Timestamp DESC"
+                : $"SELECT {SelectColumns} FROM CopyHistory ORDER BY Timestamp DESC";
 
             parameterBinder?.Invoke(command);
 
@@ -340,7 +373,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
     private static (string WhereClause, List<SqliteParameter> Parameters) BuildWhereClause(
         DateTime? startDate,
         DateTime? endDate,
-        bool? isSuccess,
+        TransferStatus? statusFilter,
         string? searchPattern)
     {
         List<string> conditions = [];
@@ -358,10 +391,20 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
             parameters.Add(new SqliteParameter("$endDate", endDate.Value.ToString("O", CultureInfo.InvariantCulture)));
         }
 
-        if (isSuccess.HasValue)
+        if (statusFilter.HasValue)
         {
-            conditions.Add("IsSuccess = $isSuccess");
-            parameters.Add(new SqliteParameter("$isSuccess", isSuccess.Value ? 1 : 0));
+            switch (statusFilter.Value)
+            {
+                case TransferStatus.Completed:
+                    conditions.Add("(LOWER(StatusText) = 'completed' OR (StatusText = '' AND IsSuccess = 1))");
+                    break;
+                case TransferStatus.Failed:
+                    conditions.Add("(LOWER(StatusText) = 'failed' OR (StatusText = '' AND IsSuccess = 0))");
+                    break;
+                case TransferStatus.Skipped:
+                    conditions.Add("LOWER(StatusText) = 'skipped'");
+                    break;
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(searchPattern))
@@ -391,7 +434,9 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
                 reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
                 reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
-                reader.IsDBNull(11) ? string.Empty : reader.GetString(11));
+                reader.IsDBNull(11) ? string.Empty : reader.GetString(11),
+                reader.IsDBNull(12) ? 0L : reader.GetInt64(12),
+                reader.IsDBNull(13) ? string.Empty : reader.GetString(13));
         }
 
         _logger.LogWarning("Failed to parse Timestamp '{TimestampStr}' in CopyHistory", timestampStr);
@@ -403,7 +448,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
     public async Task<PagedResult<CopyHistoryRecord>> GetPagedRecordsAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
-        bool? isSuccess = null,
+        TransferStatus? statusFilter = null,
         string? searchPattern = null,
         int page = 1,
         int pageSize = 50,
@@ -413,7 +458,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
         pageSize = Math.Max(1, pageSize);
         int offset = (page - 1) * pageSize;
 
-        (string whereClause, List<SqliteParameter> parameters) = BuildWhereClause(startDate, endDate, isSuccess, searchPattern);
+        (string whereClause, List<SqliteParameter> parameters) = BuildWhereClause(startDate, endDate, statusFilter, searchPattern);
 
         try
         {
@@ -443,7 +488,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
             await using (SqliteCommand queryCmd = connection.CreateCommand())
             {
                 queryCmd.CommandText = $@"
-                    SELECT Id, Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson
+                    SELECT {SelectColumns}
                     FROM CopyHistory
                     {whereClause}
                     ORDER BY Timestamp DESC
@@ -482,11 +527,11 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
     public async Task<(int TotalItems, int SuccessfulItems, long TotalBytes, int TotalAmount)> GetFilteredStatsAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
-        bool? isSuccess = null,
+        TransferStatus? statusFilter = null,
         string? searchPattern = null,
         CancellationToken cancellationToken = default)
     {
-        (string whereClause, List<SqliteParameter> parameters) = BuildWhereClause(startDate, endDate, isSuccess, searchPattern);
+        (string whereClause, List<SqliteParameter> parameters) = BuildWhereClause(startDate, endDate, statusFilter, searchPattern);
 
         try
         {
@@ -525,11 +570,11 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
     public async Task<List<CopyHistoryRecord>> GetAllFilteredRecordsAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
-        bool? isSuccess = null,
+        TransferStatus? statusFilter = null,
         string? searchPattern = null,
         CancellationToken cancellationToken = default)
     {
-        (string whereClause, List<SqliteParameter> parameters) = BuildWhereClause(startDate, endDate, isSuccess, searchPattern);
+        (string whereClause, List<SqliteParameter> parameters) = BuildWhereClause(startDate, endDate, statusFilter, searchPattern);
         List<CopyHistoryRecord> records = [];
 
         try
@@ -537,7 +582,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
             await using SqliteConnection connection = await _connectionFactory.CreateOpenConnectionAsync(cancellationToken).ConfigureAwait(false);
             await using SqliteCommand command = connection.CreateCommand();
             command.CommandText = $@"
-                SELECT Id, Timestamp, GameName, TargetDriveLetter, TargetDriveLabel, BytesTransferred, IsSuccess, Amount, SourcePath, DestinationPath, ErrorLog, SubFilesJson
+                SELECT {SelectColumns}
                 FROM CopyHistory
                 {whereClause}
                 ORDER BY Timestamp DESC";

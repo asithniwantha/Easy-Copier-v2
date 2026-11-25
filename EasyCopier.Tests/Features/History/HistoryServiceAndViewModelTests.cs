@@ -151,4 +151,68 @@ public sealed class HistoryServiceAndViewModelTests : IAsyncLifetime, IDisposabl
         vm.IsActive = false;
         Assert.False(messenger.IsRegistered<TransferBatchCompletedMessage>(vm));
     }
+
+    [Fact]
+    public async Task CopyHistoryService_MigratesLegacySchemaSupportsSkippedStatusAndDensityToggle()
+    {
+        await using (SqliteCommand legacyCreate = _anchorConnection.CreateCommand())
+        {
+            legacyCreate.CommandText = @"
+                CREATE TABLE CopyHistory (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Timestamp TEXT NOT NULL,
+                    GameName TEXT NOT NULL,
+                    TargetDriveLetter TEXT NOT NULL,
+                    TargetDriveLabel TEXT NOT NULL,
+                    BytesTransferred INTEGER NOT NULL,
+                    IsSuccess INTEGER NOT NULL
+                )";
+            _ = await legacyCreate.ExecuteNonQueryAsync();
+        }
+
+        StrongReferenceMessenger messenger = new();
+        using CopyHistoryService historyService = new(_connectionFactory, messenger, NullLogger<CopyHistoryService>.Instance);
+        await historyService.InitializeAsync();
+
+        DateTime now = DateTime.Now;
+        await historyService.AddRecordAsync(new CopyHistoryRecord(0, now, "SkippedGame", "E:", "USB", 0, false, 0, DurationMs: 84_000, StatusText: "Skipped"));
+        await historyService.AddRecordAsync(new CopyHistoryRecord(0, now.AddMinutes(-1), "DoneGame", "E:", "USB", 1024, true, 100, DurationMs: 3_665_000, StatusText: "Completed"));
+
+        PagedResult<CopyHistoryRecord> skipped = await historyService.GetPagedRecordsAsync(statusFilter: TransferStatus.Skipped);
+        Assert.Single(skipped.Items);
+        Assert.True(skipped.Items[0].IsSkippedStatus);
+        Assert.Equal("01:24", skipped.Items[0].FormattedDuration);
+
+        PagedResult<CopyHistoryRecord> completed = await historyService.GetPagedRecordsAsync(statusFilter: TransferStatus.Completed);
+        Assert.Single(completed.Items);
+        Assert.Equal("1:01:05", completed.Items[0].FormattedDuration);
+
+        HistoryViewModel vm = new(
+            historyService,
+            new ReportService(NullLogger<ReportService>.Instance),
+            Mock.Of<IFilePickerService>(),
+            new HistoryAnalysisService(),
+            CreateSyncDispatcher(),
+            messenger,
+            NullLogger<HistoryViewModel>.Instance);
+
+        await vm.InitializeAsync();
+        Assert.NotEqual("\u2014", vm.LastUpdatedText);
+        Assert.False(vm.IsCompactDensity);
+        Assert.Equal("Comfortable", vm.DensityLabel);
+
+        vm.ToggleDensityCommand.Execute(null);
+        Assert.True(vm.IsCompactDensity);
+        Assert.Equal("Compact", vm.DensityLabel);
+
+        vm.SelectedStatusFilterString = HistoryViewModel.StatusSkipped;
+        DateTime deadline = DateTime.UtcNow.AddSeconds(2);
+        while (vm.Records.Count != 1 && DateTime.UtcNow < deadline)
+        {
+            await Task.Delay(20);
+        }
+
+        Assert.Single(vm.Records);
+        Assert.Equal("SkippedGame", vm.Records[0].GameName);
+    }
 }

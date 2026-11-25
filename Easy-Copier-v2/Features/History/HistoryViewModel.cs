@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,17 +25,19 @@ public enum DateFilter
 }
 
 /// <summary>
-/// Specifies outcome status filtering options for file copy history records.
+/// Specifies tri-fold outcome status filtering options for file copy history records.
 /// </summary>
 public enum StatusFilter
 {
     All,
     Completed,
-    Failed
+    Failed,
+    Skipped
 }
 
 /// <summary>
-/// ViewModel for managing file transfer history records, filtering options, aggregated statistics, and CSV exports.
+/// ViewModel for managing file transfer history records, filtering options, aggregated statistics,
+/// spatial reporting density, and CSV exports.
 /// </summary>
 public partial class HistoryViewModel
     : ObservableRecipient, IRecipient<TransferBatchCompletedMessage>
@@ -56,9 +59,10 @@ public partial class HistoryViewModel
     public const string StatusAll = "All";
     public const string StatusCompleted = "Completed";
     public const string StatusFailed = "Failed";
+    public const string StatusSkipped = "Skipped";
 
     private static readonly string[] DefaultDateFilterStrings = [FilterToday, FilterLast7Days, FilterThisMonth, FilterAllTime];
-    private static readonly string[] DefaultStatusFilterStrings = [StatusAll, StatusCompleted, StatusFailed];
+    private static readonly string[] DefaultStatusFilterStrings = [StatusAll, StatusCompleted, StatusFailed, StatusSkipped];
 
     [ObservableProperty]
     public partial HistoryStats SelectedFilterStats { get; set; } = new(0, 0, 0, 0, "0%");
@@ -80,6 +84,16 @@ public partial class HistoryViewModel
 
     [ObservableProperty]
     public partial bool HasNoRecords { get; set; }
+
+    [ObservableProperty]
+    public partial string LastUpdatedText { get; set; } = "\u2014";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DensityLabel))]
+    public partial bool IsCompactDensity { get; set; }
+
+    /// <summary>Gets the active row density label for the UI toggle button.</summary>
+    public string DensityLabel => IsCompactDensity ? "Compact" : "Comfortable";
 
     public IReadOnlyList<DateFilter> AvailableDateFilters { get; } = Enum.GetValues<DateFilter>();
     public IReadOnlyList<StatusFilter> AvailableStatusFilters { get; } = Enum.GetValues<StatusFilter>();
@@ -238,6 +252,9 @@ public partial class HistoryViewModel
         });
     }
 
+    [RelayCommand]
+    private void ToggleDensity() => IsCompactDensity = !IsCompactDensity;
+
     partial void OnSelectedPageSizeChanged(int value)
     {
         if (value > 0 && PageSize != value)
@@ -302,6 +319,7 @@ public partial class HistoryViewModel
         {
             StatusCompleted => StatusFilter.Completed,
             StatusFailed => StatusFilter.Failed,
+            StatusSkipped => StatusFilter.Skipped,
             _ => StatusFilter.All
         };
     }
@@ -348,7 +366,7 @@ public partial class HistoryViewModel
         _ = LoadPageDataAsync();
     }
 
-    private (DateTime? StartDate, DateTime? EndDate, bool? IsSuccess, string? Search) BuildQueryFilters()
+    private (DateTime? StartDate, DateTime? EndDate, TransferStatus? Status, string? Search) BuildQueryFilters()
     {
         DateTime now = DateTime.Now;
         DateTime? startDate = SelectedDateFilter switch
@@ -367,15 +385,16 @@ public partial class HistoryViewModel
             _ => null
         };
 
-        bool? isSuccess = SelectedStatusFilter switch
+        TransferStatus? statusFilter = SelectedStatusFilter switch
         {
-            StatusFilter.Completed => true,
-            StatusFilter.Failed => false,
+            StatusFilter.Completed => TransferStatus.Completed,
+            StatusFilter.Failed => TransferStatus.Failed,
+            StatusFilter.Skipped => TransferStatus.Skipped,
             _ => null
         };
 
         string? search = string.IsNullOrWhiteSpace(SearchQuery) ? null : SearchQuery.Trim();
-        return (startDate, endDate, isSuccess, search);
+        return (startDate, endDate, statusFilter, search);
     }
 
     private async Task LoadPageDataAsync()
@@ -386,12 +405,12 @@ public partial class HistoryViewModel
         }
 
         StatusMessage = "Loading page...";
-        (DateTime? startDate, DateTime? endDate, bool? isSuccess, string? search) = BuildQueryFilters();
+        (DateTime? startDate, DateTime? endDate, TransferStatus? statusFilter, string? search) = BuildQueryFilters();
 
         Task<PagedResult<CopyHistoryRecord>> pageTask = _copyHistoryService.GetPagedRecordsAsync(
-            startDate, endDate, isSuccess, search, CurrentPage, PageSize);
+            startDate, endDate, statusFilter, search, CurrentPage, PageSize);
         Task<(int TotalItems, int SuccessfulItems, long TotalBytes, int TotalAmount)> statsTask = _copyHistoryService.GetFilteredStatsAsync(
-            startDate, endDate, isSuccess, search);
+            startDate, endDate, statusFilter, search);
 
         await Task.WhenAll(pageTask, statsTask);
 
@@ -412,6 +431,7 @@ public partial class HistoryViewModel
 
         string successRate = totalItems > 0 ? $"{Math.Round((double)successfulItems / totalItems * 100, 1)}%" : "0%";
         SelectedFilterStats = new HistoryStats(totalItems, successfulItems, totalBytes, totalAmount, successRate);
+        LastUpdatedText = DateTime.Now.ToString("MMM d, HH:mm:ss", CultureInfo.InvariantCulture);
 
         HasNoRecords = TotalRecordCount == 0;
         HeaderSubtitle = $"{TotalRecordCount:N0} transfer(s) \u2022 {SelectedDateFilterString} \u2022 {SelectedStatusFilterString}";
@@ -486,8 +506,8 @@ public partial class HistoryViewModel
         if (filePath != null)
         {
             StatusMessage = "Exporting records...";
-            (DateTime? startDate, DateTime? endDate, bool? isSuccess, string? search) = BuildQueryFilters();
-            List<CopyHistoryRecord> allFiltered = await _copyHistoryService.GetAllFilteredRecordsAsync(startDate, endDate, isSuccess, search);
+            (DateTime? startDate, DateTime? endDate, TransferStatus? statusFilter, string? search) = BuildQueryFilters();
+            List<CopyHistoryRecord> allFiltered = await _copyHistoryService.GetAllFilteredRecordsAsync(startDate, endDate, statusFilter, search);
             bool success = await _reportService.ExportHistoryToCsvAsync(filePath, allFiltered);
             StatusMessage = success
                 ? $"Exported {allFiltered.Count} record(s) to {Path.GetFileName(filePath)}"

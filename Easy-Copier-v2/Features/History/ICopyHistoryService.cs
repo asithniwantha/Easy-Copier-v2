@@ -54,7 +54,7 @@ public interface ICopyHistoryService
     Task<PagedResult<CopyHistoryRecord>> GetPagedRecordsAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
-        bool? isSuccess = null,
+        TransferStatus? statusFilter = null,
         string? searchPattern = null,
         int page = 1,
         int pageSize = 50,
@@ -66,7 +66,7 @@ public interface ICopyHistoryService
     Task<(int TotalItems, int SuccessfulItems, long TotalBytes, int TotalAmount)> GetFilteredStatsAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
-        bool? isSuccess = null,
+        TransferStatus? statusFilter = null,
         string? searchPattern = null,
         CancellationToken cancellationToken = default);
 
@@ -76,7 +76,7 @@ public interface ICopyHistoryService
     Task<List<CopyHistoryRecord>> GetAllFilteredRecordsAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
-        bool? isSuccess = null,
+        TransferStatus? statusFilter = null,
         string? searchPattern = null,
         CancellationToken cancellationToken = default);
 }
