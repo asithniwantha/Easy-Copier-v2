@@ -4,6 +4,9 @@
 		<TargetFramework>net11.0-windows10.0.26100.0</TargetFramework>
 		<TargetPlatformMinVersion>10.0.22621.0</TargetPlatformMinVersion>
 		<RootNamespace>EasyCopier</RootNamespace>
+		<Version>2.0.0</Version>
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<FileVersion>2.0.0.0</FileVersion>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<Platforms>x64</Platforms>
 		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
@@ -19,37 +22,37 @@
 		<LangVersion>15</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+	  <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.3.260402-preview2" />
+	  <PackageReference Include="CommunityToolkit.WinUI.Extensions" Version="8.3.260402-preview2" />
 	  <PackageReference Include="Microsoft.Data.Sqlite" Version="11.0.0" />
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Logging" Version="11.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="11.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="11.0.0" />
 	  <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="3.0.1" />
+	  <PackageReference Include="NReco.VideoConverter" Version="1.2.1" />
+	  <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+	  <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+	  <PackageReference Include="Serilog.Sinks.File" Version="8.0.0-nblumhardt-02322" />
+	  <PackageReference Include="System.Drawing.Common" Version="11.0.0" />
+	  <PackageReference Include="System.IO.Hashing" Version="11.0.0" />
 	  <PackageReference Include="System.Management" Version="11.0.0" />
+	  <PackageReference Include="System.Windows.Extensions" Version="11.0.0" />
 	  <PackageReference Include="Velopack" Version="1.2.161" />
 	</ItemGroup>
 	<ItemGroup>
-	  <None Remove="**\.gitkeep" />
-	  <Folder Include="Features\History\" />
-	  <Folder Include="Features\Library\Converters\" />
-	  <Folder Include="Features\Library\Details\" />
-	  <Folder Include="Features\Library\Metadata\" />
-	  <Folder Include="Features\Library\Models\" />
-	  <Folder Include="Features\Library\Scanning\" />
-	  <Folder Include="Features\Library\Tabs\" />
-	  <Folder Include="Features\OsImageLauncher\" />
-	  <Folder Include="Features\Settings\About\" />
-	  <Folder Include="Features\Shell\Contracts\" />
-	  <Folder Include="Features\SmartAdder\Behaviors\" />
-	  <Folder Include="Features\SmartAdder\Converters\" />
-	  <Folder Include="Features\SmartAdder\Models\" />
-	  <Folder Include="Features\TransferQueue\Models\" />
-	  <Folder Include="Shared\Configuration\" />
-	  <Folder Include="Shared\Interop\" />
-	  <Folder Include="Shared\Messages\" />
-	  <Folder Include="Shared\Persistence\" />
-	  <Folder Include="Shared\Platform\" />
-	  <Folder Include="Shared\UI\Converters\" />
-	  <Folder Include="Shared\UI\Helpers\" />
+	  <Content Include="Assets\AppIcon.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\Failed_operation.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	  <Content Include="Assets\successful_task_completion.wav">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 </Project>

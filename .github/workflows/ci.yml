@@ -1,0 +1,45 @@
+name: CI x64 Compilation & Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '.github/**'
+      - '**/.gitignore'
+      - '**/*.png'
+      - '**/*.jpg'
+      - '**/*.jpeg'
+      - '**/*.ico'
+      - 'LICENSE*'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '11.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Easy-Copier-v2.slnx
+
+      - name: Build solution (Release x64)
+        run: dotnet build Easy-Copier-v2.slnx --configuration Release --no-restore -p:Platform=x64 -tl:false -v m -p:EnforceCodeStyleInBuild=true -p:AnalysisLevel=latest-all
+
+      - name: Run unit and slice integration tests
+        run: dotnet test EasyCopier.Tests/EasyCopier.Tests.csproj --configuration Release --no-build --verbosity normal
+

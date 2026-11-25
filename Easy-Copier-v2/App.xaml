@@ -8,9 +8,28 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <!-- Other merged dictionaries here -->
+                <ResourceDictionary Source="ms-appx:///Shared/UI/Styles.xaml" />
+                <ResourceDictionary Source="ms-appx:///Features/Shell/Contracts/LibraryStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <!-- Other app resources here -->
+
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="Transparent"/>
+                    <SolidColorBrush x:Key="AppAccentBrush" Color="#0078D4"/>
+                    <SolidColorBrush x:Key="AppSuccessBrush" Color="#107C10"/>
+                    <SolidColorBrush x:Key="AppWarningBrush" Color="#FCE100"/>
+                    <SolidColorBrush x:Key="AppErrorBrush" Color="#E81123"/>
+                    <SolidColorBrush x:Key="PriceTextBrush" Color="#FFA500"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ApplicationPageBackgroundThemeBrush" Color="Transparent"/>
+                    <SolidColorBrush x:Key="AppAccentBrush" Color="#0078D4"/>
+                    <SolidColorBrush x:Key="AppSuccessBrush" Color="#107C10"/>
+                    <SolidColorBrush x:Key="AppWarningBrush" Color="#8F7A00"/>
+                    <SolidColorBrush x:Key="AppErrorBrush" Color="#A80000"/>
+                    <SolidColorBrush x:Key="PriceTextBrush" Color="#D97706"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

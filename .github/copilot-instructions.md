@@ -24,14 +24,14 @@
 | :--- | :--- | :--- |
 | `/` (project root) | `EasyCopier` | `Program.cs`, `App.xaml`, `CompositionRoot.cs` |
 | `Features/Shell/` | `EasyCopier.Features.Shell` | `MainWindow`, `MainPage`, `ShellViewModel`, `ShellSliceExtensions` |
-| `Features/Shell/Contracts/` | `EasyCopier.Features.Shell.Contracts` | `ILibraryTabView`, `ISearchableTabViewModel`, `LibraryTabViewModelBase`, `FileSystemItem` |
-| `Features/Library/` | `EasyCopier.Features.Library` | `LibrarySliceExtensions` |
+| `Features/Shell/Contracts/` | `EasyCopier.Features.Shell.Contracts` | `ILibraryTabView`, `ISearchableTabViewModel`, `LibraryTabViewModelBase`, `FileSystemItem`, `GameEntry`, `LibraryCategory`, `GameCategory`, `LibraryTabIndex`, `LibraryCardControl`, `AutoSuggestBoxSearchBehavior`, `LibraryViewExtensions`, `IFlyoutService`, `IFlyoutContentProvider`, `FlyoutHelper`, `CategoryFormatConverter`, `GameCategoryToVisibilityConverter` |
+| `Features/Library/` | `EasyCopier.Features.Library` | `LibrarySliceExtensions`, `LibraryCatalogService` |
 | `Features/Library/Tabs/` | `EasyCopier.Features.Library.Tabs` | `GamesTabView`, `AppsTabView`, `TvAndFilmsTabView` + ViewModels |
-| `Features/Library/Details/` | `EasyCopier.Features.Library.Details` | `GameDetailsFlyout`, `GameDetailsViewModel` |
-| `Features/Library/Scanning/` | `EasyCopier.Features.Library.Scanning` | `LibraryScannerService`, `GameScannerService`, `SourceLibraryService`, `LibraryCacheService` |
-| `Features/Library/Metadata/` | `EasyCopier.Features.Library.Metadata` | `GameInfoDownloadService`, `SysReqFormatter` |
-| `Features/Library/Models/` | `EasyCopier.Features.Library.Models` | Library-only models/enums (`GameEntry`, `LibraryCategory`, `GameCategory`) |
-| `Features/Library/Converters/` | `EasyCopier.Features.Library.Converters` | Library-only converters (`CategoryFormatConverter`, `GameCategoryToVisibilityConverter`) |
+| `Features/Library/Details/` | `EasyCopier.Features.Library.Details` | `GameDetailsFlyout`, `GameDetailsViewModel`, `VideoDetailsFlyout`, `VideoDetailsViewModel`, `LibraryFlyoutContentProvider` |
+| `Features/Library/Duplicates/` | `EasyCopier.Features.Library.Duplicates` | `DuplicateManagerWindow`, `DuplicateManagerViewModel`, `SafeDeletionService` |
+| `Features/Library/Scanning/` | `EasyCopier.Features.Library.Scanning` | `LibraryScannerService`, `GameScannerService`, `SourceLibraryService`, `LibraryCacheService`, `LibraryFilterService`, `LibrarySelectionCoordinator`, `ThumbnailService`, `GameTitleSanitizer` |
+| `Features/Library/Metadata/` | `EasyCopier.Features.Library.Metadata` | `GameInfoDownloadService`, `GameRequirementsService`, `SysReqFormatter` |
+| `Features/Library/Models/` | `EasyCopier.Features.Library.Models` | Library-only models (`LibraryCacheSnapshot`, `ItemFingerprint`, `CacheValidationOutcome`, `TvAndFilmsSortOption`, `DuplicateGroup`) |
 | `Features/OsImageLauncher/` | `EasyCopier.Features.OsImageLauncher` | `OsImagesTabView`, `OsImagesTabViewModel`, `OsImageDetailsFlyout`, `RufusResolutionHelper`, `IsoBootstrapperService`, `OsImageLauncherSliceExtensions` |
 | `Features/TransferQueue/` | `EasyCopier.Features.TransferQueue` | `TransferQueueService`, `TransferQueueViewModel`, `DriveDiscoveryService`, `DriveValidationService`, `WindowsShellTransferService`, `ConflictDialogContent`, `TransferQueueSliceExtensions` |
 | `Features/TransferQueue/Models/` | `EasyCopier.Features.TransferQueue.Models` | `TransferQueueItem`, `RemovableDrive` |
@@ -43,10 +43,11 @@
 | `Features/Settings/` | `EasyCopier.Features.Settings` | `SettingsWindow`, `SettingsViewModel`, `StartupService`, `UpdateService`, `SettingsSliceExtensions` |
 | `Features/Settings/About/` | `EasyCopier.Features.Settings.About` | `AboutWindow`, `AboutViewModel` |
 | `Shared/` | `EasyCopier.Shared` | `SharedServiceExtensions` |
-| `Shared/Configuration/` | `EasyCopier.Shared.Configuration` | `AppSettings`, `ISettingsService`, `SettingsService` |
-| `Shared/Messages/` | `EasyCopier.Shared.Messages` | Immutable cross-slice `WeakReferenceMessenger` records |
+| `Shared/Configuration/` | `EasyCopier.Shared.Configuration` | `AppSettings`, `CopyVerificationMode`, `ISettingsService`, `SettingsService` |
+| `Shared/Messages/` | `EasyCopier.Shared.Messages` | Immutable cross-slice `WeakReferenceMessenger` `sealed record` messages |
+| `Shared/Models/` | `EasyCopier.Shared.Models` | Shared domain contracts (`ValidationResult`, `ValidationSeverity`, `PagedResult<T>`, `SourceFolder`, `SourceFolderCategory`) |
 | `Shared/Persistence/` | `EasyCopier.Shared.Persistence` | `ISqliteConnectionFactory`, `SqliteConnectionFactory` |
-| `Shared/Platform/` | `EasyCopier.Shared.Platform` | `AppWindowContext`, `FolderPickerService`, `FilePickerService`, `WindowService`, `DialogService`, `DispatcherService`, `AudioPlaybackService`, `ProcessService` |
+| `Shared/Platform/` | `EasyCopier.Shared.Platform` | `AppWindowContext`, `FolderPickerService`, `FilePickerService`, `WindowService` (`WindowRegistration`), `DialogService`, `DispatcherService`, `AudioPlaybackService`, `ProcessService`, `FileSystemService`, `ClipboardService`, `SystemTrayService` (`ITransferActivityMonitor`) |
 | `Shared/Interop/` | `EasyCopier.Shared.Interop` | `FileOperationInterop`, `IFileOperationProgressSink`, `IShellItem`, `NativeWindowHelper` |
 | `Shared/UI/Converters/` | `EasyCopier.Shared.UI.Converters` | `BoolToVisibilityConverter`, `BytesToSizeConverter`, `GameSizeToPriceConverter` |
 | `Shared/UI/Helpers/` | `EasyCopier.Shared.UI.Helpers` | `FlyoutHelper`, `FormattingHelpers`, `FileSystemHelpers`, `ObservableCollectionExtensions` |
@@ -99,7 +100,7 @@
 - Eagerly resolve background message listeners (such as `ICopyHistoryService`) at startup in `CompositionRoot.cs` so they receive messages even when their UI windows are closed.
 
 ### 4. Cross-Slice Messaging (`WeakReferenceMessenger`)
-- All cross-slice notifications must use immutable `readonly record struct` payloads defined in `EasyCopier.Shared.Messages`:
+- All cross-slice notifications must use immutable `sealed record` payloads (required by `CommunityToolkit.Mvvm`'s `IRecipient<TMessage>` `where TMessage : class` constraint; nested item DTOs such as `TransferSourceItem` use `readonly record struct`) defined in `EasyCopier.Shared.Messages`:
   - `EnqueueTransferRequestMessage`
   - `TransferBatchCompletedMessage`
   - `DriveConnectionChangedMessage`

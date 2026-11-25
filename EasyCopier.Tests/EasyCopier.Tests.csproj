@@ -10,9 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="11.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="System.IO.Hashing" Version="11.0.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -21,7 +24,101 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="**\.gitkeep" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IIsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IIsoBootstrapperService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IsoBootstrapperService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageDetailsViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImageDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\Models\*.cs" Link="Linked\Features\History\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\CopyHistoryService.cs" Link="Linked\Features\History\CopyHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\HistoryAnalysisService.cs" Link="Linked\Features\History\HistoryAnalysisService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\HistoryViewModel.cs" Link="Linked\Features\History\HistoryViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\ICopyHistoryService.cs" Link="Linked\Features\History\ICopyHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\IHistoryAnalysisService.cs" Link="Linked\Features\History\IHistoryAnalysisService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\IReportService.cs" Link="Linked\Features\History\IReportService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\ReportService.cs" Link="Linked\Features\History\ReportService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Models\*.cs" Link="Linked\Features\Library\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Metadata\*.cs" Link="Linked\Features\Library\Metadata\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\GameScannerService.cs" Link="Linked\Features\Library\Scanning\GameScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\GameTitleSanitizer.cs" Link="Linked\Features\Library\Scanning\GameTitleSanitizer.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\IGameScannerService.cs" Link="Linked\Features\Library\Scanning\IGameScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ILibraryCacheService.cs" Link="Linked\Features\Library\Scanning\ILibraryCacheService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ILibraryFilterService.cs" Link="Linked\Features\Library\Scanning\ILibraryFilterService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ILibraryScannerService.cs" Link="Linked\Features\Library\Scanning\ILibraryScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ISourceLibraryService.cs" Link="Linked\Features\Library\Scanning\ISourceLibraryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\IThumbnailService.cs" Link="Linked\Features\Library\Scanning\IThumbnailService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\LibraryCacheService.cs" Link="Linked\Features\Library\Scanning\LibraryCacheService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\LibraryFilterService.cs" Link="Linked\Features\Library\Scanning\LibraryFilterService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\LibraryScannerService.cs" Link="Linked\Features\Library\Scanning\LibraryScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\SourceLibraryService.cs" Link="Linked\Features\Library\Scanning\SourceLibraryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Details\GameDetailsViewModel.cs" Link="Linked\Features\Library\Details\GameDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Details\VideoDetailsViewModel.cs" Link="Linked\Features\Library\Details\VideoDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Duplicates\DuplicateManagerViewModel.cs" Link="Linked\Features\Library\Duplicates\DuplicateManagerViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Duplicates\ISafeDeletionService.cs" Link="Linked\Features\Library\Duplicates\ISafeDeletionService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Tabs\AppsTabViewModel.cs" Link="Linked\Features\Library\Tabs\AppsTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Tabs\GamesTabViewModel.cs" Link="Linked\Features\Library\Tabs\GamesTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Tabs\TvAndFilmsTabViewModel.cs" Link="Linked\Features\Library\Tabs\TvAndFilmsTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\ILibraryCatalogService.cs" Link="Linked\Features\Library\ILibraryCatalogService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\LibraryCatalogService.cs" Link="Linked\Features\Library\LibraryCatalogService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageSortOption.cs" Link="Linked\Features\OsImageLauncher\OsImageSortOption.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImagesTabViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImagesTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\RufusResolutionHelper.cs" Link="Linked\Features\OsImageLauncher\RufusResolutionHelper.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\About\AboutViewModel.cs" Link="Linked\Features\Settings\About\AboutViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\ISettingsNavigationService.cs" Link="Linked\Features\Settings\ISettingsNavigationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\IStartupService.cs" Link="Linked\Features\Settings\IStartupService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\IUpdateService.cs" Link="Linked\Features\Settings\IUpdateService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\SettingsViewModel.cs" Link="Linked\Features\Settings\SettingsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\SettingsViewModel.Persistence.cs" Link="Linked\Features\Settings\SettingsViewModel.Persistence.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\IGameMetadataDownloader.cs" Link="Linked\Features\Shell\Contracts\IGameMetadataDownloader.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\IRufusExecutableResolver.cs" Link="Linked\Features\Shell\Contracts\IRufusExecutableResolver.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\ILibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\ILibrarySelectionCoordinator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\ISearchableTabViewModel.cs" Link="Linked\Features\Shell\Contracts\ISearchableTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryContractModels.cs" Link="Linked\Features\Shell\Contracts\LibraryContractModels.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryTabViewModelBase.cs" Link="Linked\Features\Shell\Contracts\LibraryTabViewModelBase.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\ShellViewModel.cs" Link="Linked\Features\Shell\ShellViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\Models\*.cs" Link="Linked\Features\SmartAdder\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\ISmartAdderHistoryService.cs" Link="Linked\Features\SmartAdder\ISmartAdderHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryService.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryEntryViewModel.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryEntryViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryViewModel.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderViewModel.cs" Link="Linked\Features\SmartAdder\SmartAdderViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\Models\*.cs" Link="Linked\Features\TransferQueue\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\DriveCoordinatorService.cs" Link="Linked\Features\TransferQueue\DriveCoordinatorService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\DriveValidationService.cs" Link="Linked\Features\TransferQueue\DriveValidationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IBatchNotificationService.cs" Link="Linked\Features\TransferQueue\IBatchNotificationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IConflictPromptService.cs" Link="Linked\Features\TransferQueue\IConflictPromptService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IDriveCoordinatorService.cs" Link="Linked\Features\TransferQueue\IDriveCoordinatorService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IDriveDiscoveryService.cs" Link="Linked\Features\TransferQueue\IDriveDiscoveryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IDriveValidationService.cs" Link="Linked\Features\TransferQueue\IDriveValidationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IFileTransferService.cs" Link="Linked\Features\TransferQueue\IFileTransferService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\ITransferQueueService.cs" Link="Linked\Features\TransferQueue\ITransferQueueService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IVerificationService.cs" Link="Linked\Features\TransferQueue\IVerificationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\TransferActivityMonitor.cs" Link="Linked\Features\TransferQueue\TransferActivityMonitor.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\TransferQueueService.cs" Link="Linked\Features\TransferQueue\TransferQueueService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\TransferQueueViewModel.cs" Link="Linked\Features\TransferQueue\TransferQueueViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\VerificationService.cs" Link="Linked\Features\TransferQueue\VerificationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Configuration\*.cs" Link="Linked\Shared\Configuration\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Messages\*.cs" Link="Linked\Shared\Messages\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Models\*.cs" Link="Linked\Shared\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Persistence\*.cs" Link="Linked\Shared\Persistence\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\CloseableViewModelBase.cs" Link="Linked\Shared\Platform\CloseableViewModelBase.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IAudioPlaybackService.cs" Link="Linked\Shared\Platform\IAudioPlaybackService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IClipboardService.cs" Link="Linked\Shared\Platform\IClipboardService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\ICloseableViewModel.cs" Link="Linked\Shared\Platform\ICloseableViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IDialogService.cs" Link="Linked\Shared\Platform\IDialogService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IDispatcherService.cs" Link="Linked\Shared\Platform\IDispatcherService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFilePickerService.cs" Link="Linked\Shared\Platform\IFilePickerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFileSystemService.cs" Link="Linked\Shared\Platform\IFileSystemService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFolderPickerService.cs" Link="Linked\Shared\Platform\IFolderPickerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IProcessService.cs" Link="Linked\Shared\Platform\IProcessService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\ISourceFolderValidator.cs" Link="Linked\Shared\Platform\ISourceFolderValidator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\ITransferActivityMonitor.cs" Link="Linked\Shared\Platform\ITransferActivityMonitor.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\IWindowService.cs" Link="Linked\Shared\Platform\IWindowService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\FileSystemService.cs" Link="Linked\Shared\Platform\FileSystemService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\SourceFolderValidator.cs" Link="Linked\Shared\Platform\SourceFolderValidator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\UI\Helpers\*.cs" Link="Linked\Shared\UI\Helpers\%(Filename)%(Extension)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Features\History\" />
     <Folder Include="Features\Library\" />
     <Folder Include="Features\OsImageLauncher\" />

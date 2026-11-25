@@ -1,0 +1,69 @@
+using EasyCopier.Shared.UI.Helpers;
+
+namespace EasyCopier.Shared.Platform;
+
+/// <summary>
+/// Concrete implementation of <see cref="IFileSystemService"/> delegating to standard .NET System.IO APIs.
+/// </summary>
+public class FileSystemService : IFileSystemService
+{
+    /// <inheritdoc />
+    public bool DirectoryExists(string? path) => !string.IsNullOrEmpty(path) && Directory.Exists(path);
+
+    /// <inheritdoc />
+    public bool FileExists(string? path) => !string.IsNullOrEmpty(path) && File.Exists(path);
+
+    /// <inheritdoc />
+    public string[] GetDirectories(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        return Directory.GetDirectories(path);
+    }
+
+    /// <inheritdoc />
+    public string[] GetFiles(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        return Directory.GetFiles(path);
+    }
+
+    /// <inheritdoc />
+    public long CalculateDirectorySize(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        return FileSystemHelpers.CalculateDirectorySize(new DirectoryInfo(path));
+    }
+
+    /// <inheritdoc />
+    public (DateTime? Created, DateTime? Modified, DateTime? Accessed) GetPathMetadata(string path)
+    {
+        if (FileExists(path))
+        {
+            FileInfo fi = new(path);
+            return (fi.CreationTime, fi.LastWriteTime, fi.LastAccessTime);
+        }
+
+        if (DirectoryExists(path))
+        {
+            DirectoryInfo di = new(path);
+            return (di.CreationTime, di.LastWriteTime, di.LastAccessTime);
+        }
+
+        return (null, null, null);
+    }
+
+    /// <inheritdoc />
+    public IEnumerable<(string RelativePath, long Length)> EnumerateFilesRelative(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+        {
+            return [];
+        }
+
+        EnumerationOptions options = new() { RecurseSubdirectories = true, IgnoreInaccessible = true };
+        DirectoryInfo di = new(path);
+        return di.EnumerateFiles("*", options)
+            .Select(f => (Path.GetRelativePath(path, f.FullName), f.Length));
+    }
+}
+

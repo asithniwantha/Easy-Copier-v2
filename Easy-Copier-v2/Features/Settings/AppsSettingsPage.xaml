@@ -1,0 +1,70 @@
+<Page
+    x:Class="EasyCopier.Features.Settings.AppsSettingsPage"
+    x:Name="RootPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:CommunityToolkit.WinUI.Controls"
+    mc:Ignorable="d">
+
+    <ScrollViewer Padding="24">
+        <StackPanel Spacing="16">
+            <TextBlock Text="Apps Settings" Style="{StaticResource SectionHeaderStyle}" />
+
+            <!-- App Folders SettingsExpander -->
+            <controls:SettingsExpander Header="App Source Folders"
+                                       Description="Manage directories scanned for application packages"
+                                       ItemsSource="{x:Bind ViewModel.AppSourceFolders, Mode=OneWay}"
+                                       IsExpanded="True">
+                <controls:SettingsExpander.HeaderIcon>
+                    <FontIcon Glyph="&#xE8F4;"/>
+                </controls:SettingsExpander.HeaderIcon>
+                <Button Command="{x:Bind ViewModel.AddNewSourceFolderCommand}" CommandParameter="App">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <FontIcon Glyph="&#xE710;" FontSize="12"/>
+                        <TextBlock Text="Add Folder"/>
+                    </StackPanel>
+                </Button>
+                <controls:SettingsExpander.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <controls:SettingsCard Header="{x:Bind}">
+                            <controls:SettingsCard.HeaderIcon>
+                                <FontIcon Glyph="&#xE8F4;"/>
+                            </controls:SettingsCard.HeaderIcon>
+                            <Button Command="{Binding ElementName=RootPage, Path=ViewModel.RemoveSourceFolderByPathCommand}"
+                                    CommandParameter="{x:Bind}"
+                                    ToolTipService.ToolTip="Remove folder"
+                                    Padding="8,6">
+                                <FontIcon Glyph="&#xE74D;" FontSize="14"/>
+                            </Button>
+                        </controls:SettingsCard>
+                    </DataTemplate>
+                </controls:SettingsExpander.ItemTemplate>
+                <controls:SettingsExpander.ItemsFooter>
+                    <controls:SettingsCard Visibility="{x:Bind ViewModel.HasNoAppSourceFolders, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                           Header="No app folders added yet"
+                                           Description="Click 'Add Folder' above to add a source directory">
+                        <controls:SettingsCard.HeaderIcon>
+                            <FontIcon Glyph="&#xE71D;"/>
+                        </controls:SettingsCard.HeaderIcon>
+                    </controls:SettingsCard>
+                </controls:SettingsExpander.ItemsFooter>
+            </controls:SettingsExpander>
+
+            <!-- App File Recognition SettingsCard -->
+            <controls:SettingsCard Header="App File Recognition"
+                                   Description="Comma-separated extensions to identify standalone app files (.exe, .msi, etc.)"
+                                   ContentAlignment="Right">
+                <controls:SettingsCard.HeaderIcon>
+                    <FontIcon Glyph="&#xE71D;"/>
+                </controls:SettingsCard.HeaderIcon>
+                <TextBox Text="{x:Bind ViewModel.AppFileExtensions, Mode=TwoWay}"
+                         PlaceholderText="e.g. .exe,.msi,.rar,.zip"
+                         MinWidth="240"
+                         ToolTipService.ToolTip="Comma-separated extensions to identify standalone app files" />
+            </controls:SettingsCard>
+        </StackPanel>
+    </ScrollViewer>
+</Page>
+
