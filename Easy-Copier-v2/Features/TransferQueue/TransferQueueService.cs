@@ -199,6 +199,11 @@ public sealed class TransferQueueService : ITransferQueueService, IDisposable
                     item.ProgressPercentage = p.Percentage;
                     item.SpeedText = p.SpeedText;
                     item.RemainingTimeText = p.RemainingTimeText;
+
+                    if (p.BytesPerSecond is { } bytesPerSecond)
+                    {
+                        item.RecordSpeed(bytesPerSecond);
+                    }
                 });
             });
 
@@ -232,6 +237,7 @@ public sealed class TransferQueueService : ITransferQueueService, IDisposable
                 item.StatusMessage = "Transfer failed unexpectedly";
             }
 
+            item.CurrentSpeedMBps = 0;
             item.CompletedAt = DateTime.Now;
             ItemCompleted?.Invoke(this, item);
 

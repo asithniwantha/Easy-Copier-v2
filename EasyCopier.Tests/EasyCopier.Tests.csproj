@@ -93,6 +93,8 @@
     <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\ITransferQueueService.cs" Link="Linked\Features\TransferQueue\ITransferQueueService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\IVerificationService.cs" Link="Linked\Features\TransferQueue\IVerificationService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\TransferActivityMonitor.cs" Link="Linked\Features\TransferQueue\TransferActivityMonitor.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\SlidingWindowSpeedCalculator.cs" Link="Linked\Features\TransferQueue\SlidingWindowSpeedCalculator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\SpeedGraphGeometry.cs" Link="Linked\Features\TransferQueue\SpeedGraphGeometry.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\TransferQueueService.cs" Link="Linked\Features\TransferQueue\TransferQueueService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\TransferQueueViewModel.cs" Link="Linked\Features\TransferQueue\TransferQueueViewModel.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\TransferQueue\VerificationService.cs" Link="Linked\Features\TransferQueue\VerificationService.cs" />

@@ -23,8 +23,9 @@ public record TransferItem(
 
 /// <summary>
 /// Represents the progress of an active file copy or transfer operation.
+/// <see cref="BytesPerSecond"/> is the current (recent-window) rate, or <see langword="null"/> when no rate applies (e.g. verification).
 /// </summary>
-public record TransferProgress(double Percentage, string SpeedText, string RemainingTimeText);
+public record TransferProgress(double Percentage, string SpeedText, string RemainingTimeText, double? BytesPerSecond = null);
 
 /// <summary>
 /// Represents a request to transfer a batch of items to a designated removable drive.

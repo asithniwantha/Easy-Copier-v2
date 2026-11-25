@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace EasyCopier.Features.TransferQueue.Models;
@@ -23,6 +25,8 @@ public sealed partial class TransferQueueItem(
     string destinationPath,
     int totalPrice) : ObservableObject, IDisposable
 {
+    private readonly TransferSpeedHistory _speedHistory = new();
+    private long _speedClockOrigin = Stopwatch.GetTimestamp();
     private CancellationTokenSource? _cancellationTokenSource;
 
     /// <summary>Gets the unique identifier for this queue item job.</summary>
@@ -74,6 +78,25 @@ public sealed partial class TransferQueueItem(
     public partial string SpeedText { get; set; } = string.Empty;
 
     /// <summary>
+    /// Gets or sets the current transfer speed in MB/s.
+    /// </summary>
+    [ObservableProperty]
+    public partial double CurrentSpeedMBps { get; set; }
+
+    /// <summary>
+    /// Gets or sets the rolling history of speed samples (MB/s, oldest first) used by the speed graph.
+    /// A new list instance is assigned on every update so bindings refresh.
+    /// </summary>
+    [ObservableProperty]
+    public partial IReadOnlyList<double> SpeedSamples { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the highest speed observed during this transfer, in MB/s.
+    /// </summary>
+    [ObservableProperty]
+    public partial double PeakSpeedMBps { get; set; }
+
+    /// <summary>
     /// Gets or sets the formatted estimated remaining transfer time string.
     /// </summary>
     [ObservableProperty]
@@ -113,6 +136,12 @@ public sealed partial class TransferQueueItem(
     /// <summary>Gets a value indicating whether this item is currently queued or in progress.</summary>
     public bool IsActive => Status is TransferQueueItemStatus.Queued or TransferQueueItemStatus.InProgress;
 
+    /// <summary>Gets the current speed formatted for display (e.g. "42.5 MB/s").</summary>
+    public string CurrentSpeedLabel => string.Create(CultureInfo.CurrentCulture, $"{CurrentSpeedMBps:0.0} MB/s");
+
+    /// <summary>Gets a value indicating whether this item is currently being transferred.</summary>
+    public bool IsInProgress => Status is TransferQueueItemStatus.InProgress;
+
     /// <summary>Gets a value indicating whether this item can be retried (only when failed or cancelled).</summary>
     public bool CanRetry => Status is TransferQueueItemStatus.Failed or TransferQueueItemStatus.Cancelled;
 
@@ -128,6 +157,30 @@ public sealed partial class TransferQueueItem(
         }
     }
 
+    /// <summary>Records a current transfer rate sample for the speed graph. Call on the UI thread.</summary>
+    /// <param name="bytesPerSecond">The current transfer rate in bytes per second.</param>
+    public void RecordSpeed(double bytesPerSecond)
+    {
+        double mbps = TransferSpeedHistory.ToMBps(bytesPerSecond);
+        CurrentSpeedMBps = mbps;
+
+        if (_speedHistory.TryAdd(mbps, Stopwatch.GetElapsedTime(_speedClockOrigin)))
+        {
+            SpeedSamples = _speedHistory.Snapshot();
+            PeakSpeedMBps = _speedHistory.PeakMBps;
+        }
+    }
+
+    /// <summary>Clears the current speed and the graph history.</summary>
+    public void ResetSpeedHistory()
+    {
+        _speedHistory.Clear();
+        _speedClockOrigin = Stopwatch.GetTimestamp();
+        CurrentSpeedMBps = 0;
+        PeakSpeedMBps = 0;
+        SpeedSamples = [];
+    }
+
     /// <summary>Resets the queue item to a fresh queued state with a renewed cancellation token for retry execution.</summary>
     public void ResetForRetry()
     {
@@ -138,6 +191,7 @@ public sealed partial class TransferQueueItem(
         ProgressPercentage = 0;
         SpeedText = string.Empty;
         RemainingTimeText = string.Empty;
+        ResetSpeedHistory();
         CompletedAt = null;
     }
 
@@ -148,11 +202,14 @@ public sealed partial class TransferQueueItem(
         _cancellationTokenSource = null;
     }
 
+    partial void OnCurrentSpeedMBpsChanged(double value) => OnPropertyChanged(nameof(CurrentSpeedLabel));
+
     partial void OnStatusChanged(TransferQueueItemStatus value)
     {
         OnPropertyChanged(nameof(StatusGlyph));
         OnPropertyChanged(nameof(StatusLabel));
         OnPropertyChanged(nameof(IsActive));
+        OnPropertyChanged(nameof(IsInProgress));
         OnPropertyChanged(nameof(CanRetry));
     }
 }

@@ -51,9 +51,7 @@ public sealed partial class MainWindow : Window
         WindowId windowId = Win32Interop.GetWindowIdFromWindow(hwnd);
         AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
 
-        if (appWindow is not null)
-        {
-            appWindow.Closing += (_, args) =>
+        appWindow?.Closing += (_, args) =>
             {
                 AppSettings settings = _settingsService.LoadSettingsSync();
                 if (_transferActivityMonitor.HasActiveTransfers && settings.MinimizeToTrayOnClose)
@@ -66,6 +64,5 @@ public sealed partial class MainWindow : Window
                     _systemTrayService.RemoveTrayIcon();
                 }
             };
-        }
     }
 }

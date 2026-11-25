@@ -15,6 +15,7 @@ public sealed class FileOperationProgressSink : IFileOperationProgressSink
     private readonly long _totalBytes;
     private readonly CancellationToken _cancellationToken;
     private readonly Stopwatch _stopwatch;
+    private readonly SlidingWindowSpeedCalculator _speedCalculator = new();
     private long _bytesTransferred;
 
     /// <summary>
@@ -42,7 +43,7 @@ public sealed class FileOperationProgressSink : IFileOperationProgressSink
     public uint FinishOperations(uint hrResult)
     {
         _stopwatch.Stop();
-        _progress?.Report(new TransferProgress(100.0, string.Empty, "Completed"));
+        _progress?.Report(new TransferProgress(100.0, string.Empty, "Completed", 0));
         return 0;
     }
 
@@ -100,25 +101,31 @@ public sealed class FileOperationProgressSink : IFileOperationProgressSink
             _bytesTransferred = (long)(fraction * _totalBytes);
             double percentage = fraction * 100.0;
 
-            double elapsedSeconds = _stopwatch.Elapsed.TotalSeconds;
+            TimeSpan elapsed = _stopwatch.Elapsed;
+            double elapsedSeconds = elapsed.TotalSeconds;
             string speedText = "Calculating...";
             string remainingTimeText = "Calculating...";
+            double? currentBytesPerSecond = null;
 
             if (elapsedSeconds > 0)
             {
-                double bytesPerSecond = _bytesTransferred / elapsedSeconds;
-                speedText = FormattingHelpers.FormatBytes((long)bytesPerSecond) + "/s";
+                double currentSpeed = _speedCalculator.AddSample(elapsed, _bytesTransferred);
+                currentBytesPerSecond = currentSpeed;
+                speedText = FormattingHelpers.FormatBytes((long)currentSpeed) + "/s";
 
-                if (bytesPerSecond > 0)
+                // ETA uses the overall average so it stays stable while the displayed speed fluctuates.
+                double averageBytesPerSecond = _bytesTransferred / elapsedSeconds;
+
+                if (averageBytesPerSecond > 0)
                 {
                     long remainingBytes = _totalBytes - _bytesTransferred;
-                    double remainingSeconds = remainingBytes / bytesPerSecond;
+                    double remainingSeconds = remainingBytes / averageBytesPerSecond;
                     TimeSpan remainingTime = TimeSpan.FromSeconds(remainingSeconds);
                     remainingTimeText = remainingTime.ToString(@"hh\:mm\:ss", CultureInfo.InvariantCulture);
                 }
             }
 
-            _progress.Report(new TransferProgress(percentage, speedText, remainingTimeText));
+            _progress.Report(new TransferProgress(percentage, speedText, remainingTimeText, currentBytesPerSecond));
         }
 
         return 0;
