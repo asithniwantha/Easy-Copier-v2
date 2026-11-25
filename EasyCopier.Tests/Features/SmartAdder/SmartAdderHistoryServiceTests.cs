@@ -100,3 +100,4 @@ public sealed class SmartAdderHistoryServiceTests : IDisposable
         Assert.Equal(42, records[0].TotalSum);
     }
 }
+

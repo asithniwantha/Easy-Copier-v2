@@ -23,3 +23,4 @@ public interface IDriveCoordinatorService : IDisposable
     void StopWatching();
     event EventHandler? DrivesChanged;
 }
+

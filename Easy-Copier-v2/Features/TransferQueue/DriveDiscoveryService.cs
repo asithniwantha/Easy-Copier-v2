@@ -325,3 +325,4 @@ public sealed class DriveDiscoveryService : IDriveDiscoveryService
         _driveChangeCallbacksCompleted.Dispose();
     }
 }
+

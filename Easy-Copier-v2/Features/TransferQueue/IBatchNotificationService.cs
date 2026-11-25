@@ -17,3 +17,4 @@ public interface IBatchNotificationService
     /// </summary>
     event EventHandler<(string Title, string Message, bool IsSuccess)>? BatchCompleted;
 }
+

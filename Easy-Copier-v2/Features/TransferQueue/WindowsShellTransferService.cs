@@ -527,3 +527,4 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
         public static partial int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
     }
 }
+

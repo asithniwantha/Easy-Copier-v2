@@ -31,3 +31,4 @@ public sealed class NullGameMetadataDownloader : IGameMetadataDownloader
         return Task.CompletedTask;
     }
 }
+

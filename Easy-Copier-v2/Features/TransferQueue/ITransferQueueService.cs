@@ -24,3 +24,4 @@ public interface ITransferQueueService
 
     event EventHandler<(string Title, string Message, bool IsSuccess)>? BatchCompleted;
 }
+

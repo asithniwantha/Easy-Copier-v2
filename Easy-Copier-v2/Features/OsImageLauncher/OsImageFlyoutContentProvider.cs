@@ -35,3 +35,4 @@ public sealed class OsImageFlyoutContentProvider : IFlyoutContentProvider
         return Task.FromResult<(UIElement Content, Style? PresenterStyle)?>((flyout, null));
     }
 }
+

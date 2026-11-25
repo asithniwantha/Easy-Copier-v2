@@ -92,3 +92,4 @@ public sealed class RufusExecutableResolverAdapter : IRufusExecutableResolver
     public string ResolveLatestRufusPath(string? currentRufusPath) =>
         RufusResolutionHelper.ResolveLatestRufusPath(currentRufusPath);
 }
+

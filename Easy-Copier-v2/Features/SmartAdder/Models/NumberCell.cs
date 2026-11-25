@@ -49,3 +49,4 @@ public partial class NumberCell : ObservableObject
             out value);
     }
 }
+

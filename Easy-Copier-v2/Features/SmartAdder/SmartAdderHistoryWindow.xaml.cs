@@ -33,3 +33,4 @@ public sealed partial class SmartAdderHistoryWindow : Window
         _ = ViewModel.InitializeAsync();
     }
 }
+

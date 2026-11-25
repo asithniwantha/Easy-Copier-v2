@@ -101,3 +101,4 @@ public sealed class DriveValidationAndVerificationTests : IDisposable
         Assert.Contains("data.bin", shaFail.MismatchedFiles![0], StringComparison.Ordinal);
     }
 }
+

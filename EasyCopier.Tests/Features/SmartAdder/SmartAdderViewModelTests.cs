@@ -112,3 +112,4 @@ public sealed class SmartAdderViewModelTests
         Assert.Contains("30", historyVm.Records[0].TotalDisplay, StringComparison.Ordinal);
     }
 }
+

@@ -133,3 +133,4 @@ public sealed class FileOperationProgressSink : IFileOperationProgressSink
     /// <inheritdoc />
     public uint ResumeTimer() => 0;
 }
+

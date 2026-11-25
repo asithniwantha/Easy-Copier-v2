@@ -17,3 +17,4 @@ public interface ISettingsNavigationService
     /// </summary>
     Type GetPageTypeForTag(string? tag);
 }
+

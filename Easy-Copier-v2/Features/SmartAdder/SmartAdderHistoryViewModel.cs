@@ -52,3 +52,4 @@ public sealed partial class SmartAdderHistoryViewModel : CloseableViewModelBase
         IsEmpty = Records.Count == 0;
     }
 }
+

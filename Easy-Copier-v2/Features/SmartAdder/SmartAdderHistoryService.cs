@@ -132,3 +132,4 @@ public sealed class SmartAdderHistoryService : ISmartAdderHistoryService
         return records;
     }
 }
+

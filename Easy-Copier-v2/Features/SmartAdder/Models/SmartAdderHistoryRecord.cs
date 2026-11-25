@@ -34,3 +34,4 @@ public class SmartAdderHistoryRecord
         set => TotalSum = value;
     }
 }
+

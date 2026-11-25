@@ -25,3 +25,4 @@ public static class SmartAdderSliceExtensions
         return services;
     }
 }
+

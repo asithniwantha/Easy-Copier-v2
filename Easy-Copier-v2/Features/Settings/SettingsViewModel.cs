@@ -532,3 +532,4 @@ public sealed partial class SettingsViewModel : ObservableObject, ICloseableView
         }
     }
 }
+

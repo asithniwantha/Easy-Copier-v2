@@ -18,3 +18,4 @@ public interface IVerificationService
         IProgress<double>? progress = null,
         CancellationToken cancellationToken = default);
 }
+

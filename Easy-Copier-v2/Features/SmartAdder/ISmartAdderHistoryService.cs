@@ -27,3 +27,4 @@ public interface ISmartAdderHistoryService
     /// <returns>A task containing a list of recent <see cref="SmartAdderHistoryRecord"/> items.</returns>
     Task<List<SmartAdderHistoryRecord>> GetRecentRecordsAsync(int count);
 }
+

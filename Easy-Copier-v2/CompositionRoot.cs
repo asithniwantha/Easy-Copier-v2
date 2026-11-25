@@ -1,3 +1,4 @@
+using EasyCopier.Features.Library;
 using EasyCopier.Features.OsImageLauncher;
 using EasyCopier.Features.Settings;
 using EasyCopier.Features.Shell;
@@ -23,6 +24,7 @@ public static class CompositionRoot
         services.AddSettingsSlice();
         services.AddOsImageLauncherSlice();
         services.AddTransferQueueSlice();
+        services.AddLibrarySlice();
 
         return services.BuildServiceProvider();
     }

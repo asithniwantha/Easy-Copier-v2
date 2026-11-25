@@ -32,3 +32,4 @@ public sealed class QueueStatusToBrushConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+

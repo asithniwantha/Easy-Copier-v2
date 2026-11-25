@@ -54,3 +54,4 @@ public sealed class SourceFolderValidator : ISourceFolderValidator
         return Task.Run(() => Directory.Exists(folderPath));
     }
 }
+

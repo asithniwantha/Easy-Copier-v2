@@ -31,3 +31,4 @@ public sealed partial class AboutWindow : Window
         NativeWindowHelper.InitializeModalWindow(this, _owner, ViewModel, 540, 780);
     }
 }
+

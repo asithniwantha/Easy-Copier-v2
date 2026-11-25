@@ -164,3 +164,4 @@ public sealed class SettingsViewModelTests
         }
     }
 }
+

@@ -29,3 +29,4 @@ public sealed partial class AppsSettingsPage : Page
         SettingsWindow.AttachPageViewModel(this, e, vm => ViewModel = vm, Bindings.Update);
     }
 }
+

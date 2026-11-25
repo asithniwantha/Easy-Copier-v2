@@ -25,3 +25,4 @@ public sealed class DefaultRufusExecutableResolver : IRufusExecutableResolver
             : Environment.ExpandEnvironmentVariables(currentRufusPath);
     }
 }
+

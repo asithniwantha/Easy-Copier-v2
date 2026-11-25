@@ -29,3 +29,4 @@ public sealed partial class OsImagesSettingsPage : Page
         SettingsWindow.AttachPageViewModel(this, e, vm => ViewModel = vm, Bindings.Update);
     }
 }
+

@@ -154,3 +154,4 @@ public sealed class OsImageLauncherTests : IDisposable
         Assert.Equal("N/A", vm.DateCreatedFormatted);
     }
 }
+

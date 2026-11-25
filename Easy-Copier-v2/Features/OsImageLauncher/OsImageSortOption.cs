@@ -14,3 +14,4 @@ public enum OsImageSortOption
     /// <summary>Sort by file size on disk.</summary>
     Size
 }
+

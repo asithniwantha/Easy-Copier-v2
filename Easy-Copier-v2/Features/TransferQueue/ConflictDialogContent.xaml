@@ -58,3 +58,4 @@
             IsChecked="{x:Bind IsApplyToAllChecked, Mode=TwoWay}" />
     </StackPanel>
 </UserControl>
+

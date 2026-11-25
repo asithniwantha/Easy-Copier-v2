@@ -22,3 +22,4 @@ public sealed partial class OsImageDetailsFlyout : UserControl
         InitializeComponent();
     }
 }
+

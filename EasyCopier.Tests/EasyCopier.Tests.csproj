@@ -27,6 +27,29 @@
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IIsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IIsoBootstrapperService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IsoBootstrapperService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageDetailsViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImageDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Models\*.cs" Link="Linked\Features\Library\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Metadata\*.cs" Link="Linked\Features\Library\Metadata\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\GameScannerService.cs" Link="Linked\Features\Library\Scanning\GameScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\GameTitleSanitizer.cs" Link="Linked\Features\Library\Scanning\GameTitleSanitizer.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\IGameScannerService.cs" Link="Linked\Features\Library\Scanning\IGameScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ILibraryCacheService.cs" Link="Linked\Features\Library\Scanning\ILibraryCacheService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ILibraryFilterService.cs" Link="Linked\Features\Library\Scanning\ILibraryFilterService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ILibraryScannerService.cs" Link="Linked\Features\Library\Scanning\ILibraryScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\ISourceLibraryService.cs" Link="Linked\Features\Library\Scanning\ISourceLibraryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\IThumbnailService.cs" Link="Linked\Features\Library\Scanning\IThumbnailService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\LibraryCacheService.cs" Link="Linked\Features\Library\Scanning\LibraryCacheService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\LibraryFilterService.cs" Link="Linked\Features\Library\Scanning\LibraryFilterService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\LibraryScannerService.cs" Link="Linked\Features\Library\Scanning\LibraryScannerService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\SourceLibraryService.cs" Link="Linked\Features\Library\Scanning\SourceLibraryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Details\GameDetailsViewModel.cs" Link="Linked\Features\Library\Details\GameDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Details\VideoDetailsViewModel.cs" Link="Linked\Features\Library\Details\VideoDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Duplicates\DuplicateManagerViewModel.cs" Link="Linked\Features\Library\Duplicates\DuplicateManagerViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Duplicates\ISafeDeletionService.cs" Link="Linked\Features\Library\Duplicates\ISafeDeletionService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Tabs\AppsTabViewModel.cs" Link="Linked\Features\Library\Tabs\AppsTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Tabs\GamesTabViewModel.cs" Link="Linked\Features\Library\Tabs\GamesTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\Tabs\TvAndFilmsTabViewModel.cs" Link="Linked\Features\Library\Tabs\TvAndFilmsTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\ILibraryCatalogService.cs" Link="Linked\Features\Library\ILibraryCatalogService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Library\LibraryCatalogService.cs" Link="Linked\Features\Library\LibraryCatalogService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageSortOption.cs" Link="Linked\Features\OsImageLauncher\OsImageSortOption.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImagesTabViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImagesTabViewModel.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\RufusResolutionHelper.cs" Link="Linked\Features\OsImageLauncher\RufusResolutionHelper.cs" />

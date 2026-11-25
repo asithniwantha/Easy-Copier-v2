@@ -20,3 +20,4 @@ public interface IFileTransferService
     /// </summary>
     Task<(long Size, int Count)> GetFolderStatsAsync(string path);
 }
+

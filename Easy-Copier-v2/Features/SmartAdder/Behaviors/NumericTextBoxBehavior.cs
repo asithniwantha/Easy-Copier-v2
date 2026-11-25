@@ -214,3 +214,4 @@ public sealed class NumericTextBoxBehavior : Behavior<TextBox>
         textBox.Select(textBox.Text.Length, 0);
     }
 }
+

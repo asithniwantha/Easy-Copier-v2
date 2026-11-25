@@ -154,3 +154,4 @@ public sealed partial class UpdateService : IUpdateService
     [LoggerMessage(EventId = 12, Level = LogLevel.Error, Message = "Error while applying update version {TargetVersion} and restarting.")]
     private static partial void LogApplyUpdateError(ILogger logger, Exception ex, string targetVersion);
 }
+

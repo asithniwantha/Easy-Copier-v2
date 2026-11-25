@@ -22,3 +22,4 @@ public record RemovableDrive(
     /// </summary>
     public const long Fat32MaxFileSize = 4L * 1024 * 1024 * 1024;
 }
+

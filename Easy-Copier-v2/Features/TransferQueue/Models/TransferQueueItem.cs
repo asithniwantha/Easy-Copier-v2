@@ -156,3 +156,4 @@ public sealed partial class TransferQueueItem(
         OnPropertyChanged(nameof(CanRetry));
     }
 }
+

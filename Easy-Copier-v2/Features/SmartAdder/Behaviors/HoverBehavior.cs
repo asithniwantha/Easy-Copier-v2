@@ -51,3 +51,4 @@ public sealed class HoverBehavior : Behavior<FrameworkElement>
         IsHovered = false;
     }
 }
+

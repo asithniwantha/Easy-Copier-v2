@@ -27,3 +27,4 @@ public sealed class NegativeToForegroundConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+

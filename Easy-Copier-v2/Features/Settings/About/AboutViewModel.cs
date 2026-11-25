@@ -89,3 +89,4 @@ public partial class AboutViewModel : CloseableViewModelBase
         }
     }
 }
+

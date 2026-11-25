@@ -74,3 +74,4 @@ public sealed partial class OsImageDetailsViewModel : ObservableObject
             : "N/A";
     }
 }
+

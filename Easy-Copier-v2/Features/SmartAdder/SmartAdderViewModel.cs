@@ -201,3 +201,4 @@ public sealed partial class SmartAdderViewModel : ObservableObject
         AddNewCell();
     }
 }
+

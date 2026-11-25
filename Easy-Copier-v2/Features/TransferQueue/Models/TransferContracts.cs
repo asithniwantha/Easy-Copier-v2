@@ -53,3 +53,4 @@ public record TransferOutcome(
     DateTime CompletedAt,
     TimeSpan Duration = default,
     IReadOnlyList<TransferCompletedItemDescriptor>? ItemResults = null);
+

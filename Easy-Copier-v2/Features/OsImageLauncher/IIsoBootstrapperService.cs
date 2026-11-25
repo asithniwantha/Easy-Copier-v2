@@ -12,3 +12,4 @@ public interface IIsoBootstrapperService
     /// <returns>A tuple containing a success indicator and a status message.</returns>
     Task<(bool Success, string Message)> LaunchWithIsoAsync(string isoPath);
 }
+

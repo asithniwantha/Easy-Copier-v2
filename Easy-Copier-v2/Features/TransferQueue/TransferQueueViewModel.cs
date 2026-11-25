@@ -483,3 +483,4 @@ public sealed partial class TransferQueueViewModel
         _driveCoordinatorService.StopWatching();
     }
 }
+

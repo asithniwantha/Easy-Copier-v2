@@ -135,3 +135,4 @@ public sealed partial class SettingsViewModel
         return a.Count == b.Count && a.SequenceEqual(b, StringComparer.OrdinalIgnoreCase);
     }
 }
+

@@ -46,3 +46,4 @@ public sealed class ConflictPromptService : IConflictPromptService
         return (action, content.IsApplyToAllChecked);
     }
 }
+

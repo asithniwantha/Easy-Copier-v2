@@ -27,3 +27,4 @@ public sealed class AboutViewModelTests
         Assert.False(string.IsNullOrWhiteSpace(vm.AppVersion));
     }
 }
+

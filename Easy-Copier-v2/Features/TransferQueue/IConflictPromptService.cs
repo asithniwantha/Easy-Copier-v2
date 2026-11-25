@@ -18,3 +18,4 @@ public interface IConflictPromptService
         long destSize,
         int destCount);
 }
+

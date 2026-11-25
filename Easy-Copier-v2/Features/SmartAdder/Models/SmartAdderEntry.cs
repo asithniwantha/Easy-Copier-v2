@@ -29,3 +29,4 @@ public partial class SmartAdderEntry : ObservableObject
     /// </summary>
     public bool IsEmpty => string.IsNullOrWhiteSpace(Text);
 }
+

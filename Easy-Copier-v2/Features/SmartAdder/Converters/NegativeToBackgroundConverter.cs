@@ -30,3 +30,4 @@ public sealed class NegativeToBackgroundConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+

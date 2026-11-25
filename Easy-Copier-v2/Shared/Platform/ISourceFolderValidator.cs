@@ -17,3 +17,4 @@ public interface ISourceFolderValidator
     /// </summary>
     Task<bool> FolderExistsAsync(string folderPath);
 }
+

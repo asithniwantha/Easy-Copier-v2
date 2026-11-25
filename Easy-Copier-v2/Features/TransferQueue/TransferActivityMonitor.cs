@@ -138,3 +138,4 @@ public sealed class TransferActivityMonitor : ITransferActivityMonitor, IDisposa
         _trackedItems.Clear();
     }
 }
+

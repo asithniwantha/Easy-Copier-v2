@@ -19,3 +19,4 @@ public interface IDriveDiscoveryService : IDisposable
     /// <summary>Stops watching for hardware volume change events.</summary>
     void StopWatching();
 }
+

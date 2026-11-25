@@ -79,3 +79,4 @@ public sealed partial class OsImagesTabView : UserControl, ILibraryTabView
         SelectionChanged?.Invoke(this, e);
     }
 }
+

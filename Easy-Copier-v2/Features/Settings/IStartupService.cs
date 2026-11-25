@@ -11,3 +11,4 @@ public interface IStartupService
     /// <param name="enable"><c>true</c> to enable launch at logon; <c>false</c> to disable.</param>
     void UpdateStartOnLogon(bool enable);
 }
+
