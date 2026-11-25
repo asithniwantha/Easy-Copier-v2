@@ -28,6 +28,12 @@
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryContractModels.cs" Link="Linked\Features\Shell\Contracts\LibraryContractModels.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryTabViewModelBase.cs" Link="Linked\Features\Shell\Contracts\LibraryTabViewModelBase.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\Models\*.cs" Link="Linked\Features\SmartAdder\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\ISmartAdderHistoryService.cs" Link="Linked\Features\SmartAdder\ISmartAdderHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryService.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryEntryViewModel.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryEntryViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryViewModel.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderViewModel.cs" Link="Linked\Features\SmartAdder\SmartAdderViewModel.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Configuration\*.cs" Link="Linked\Shared\Configuration\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Shared\Messages\*.cs" Link="Linked\Shared\Messages\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Shared\Models\*.cs" Link="Linked\Shared\Models\%(Filename)%(Extension)" />

@@ -1,4 +1,5 @@
 ﻿using EasyCopier.Features.Shell;
+using EasyCopier.Features.SmartAdder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Serilog;
@@ -39,6 +40,8 @@ public partial class App : Application
         MainWindow = _window;
         _window.Closed += (_, _) => DisposeServices();
         _window.Activate();
+
+        _ = Services.GetRequiredService<ISmartAdderHistoryService>().InitializeAsync();
     }
 
     /// <summary>
