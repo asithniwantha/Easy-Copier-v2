@@ -2,6 +2,7 @@ using EasyCopier.Features.OsImageLauncher;
 using EasyCopier.Features.Settings;
 using EasyCopier.Features.Shell;
 using EasyCopier.Features.SmartAdder;
+using EasyCopier.Features.TransferQueue;
 using EasyCopier.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +22,7 @@ public static class CompositionRoot
         services.AddSmartAdderSlice();
         services.AddSettingsSlice();
         services.AddOsImageLauncherSlice();
+        services.AddTransferQueueSlice();
 
         return services.BuildServiceProvider();
     }

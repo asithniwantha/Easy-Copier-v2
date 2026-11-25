@@ -11,6 +11,23 @@ public readonly record struct TransferSourceItem(
     bool HasFat32OversizedFiles);
 
 /// <summary>
+/// Immutable per-item outcome descriptor published when a transfer batch finishes so History logs each item decoupled from TransferQueue.
+/// </summary>
+public readonly record struct TransferCompletedItemDescriptor(
+    string ItemName,
+    string SourcePath,
+    string DestinationPath,
+    long BytesTransferred,
+    bool IsSuccess,
+    int Amount,
+    int BatchAmount,
+    string ErrorLog,
+    string SubFilesJson,
+    TimeSpan Duration,
+    string StatusText = "Completed",
+    DateTime Timestamp = default);
+
+/// <summary>
 /// Cross-slice message requesting the TransferQueue slice to enqueue one or more items for copying.
 /// </summary>
 public sealed record EnqueueTransferRequestMessage(
@@ -26,4 +43,6 @@ public sealed record TransferBatchCompletedMessage(
     int SuccessCount,
     int FailureCount,
     long TotalBytesTransferred,
-    TimeSpan Duration);
+    TimeSpan Duration,
+    string TargetDriveLabel = "",
+    IReadOnlyList<TransferCompletedItemDescriptor>? ItemResults = null);
