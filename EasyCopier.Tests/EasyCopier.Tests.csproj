@@ -23,6 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\ILibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\ILibrarySelectionCoordinator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\ISearchableTabViewModel.cs" Link="Linked\Features\Shell\Contracts\ISearchableTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryContractModels.cs" Link="Linked\Features\Shell\Contracts\LibraryContractModels.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryTabViewModelBase.cs" Link="Linked\Features\Shell\Contracts\LibraryTabViewModelBase.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Configuration\*.cs" Link="Linked\Shared\Configuration\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Shared\Messages\*.cs" Link="Linked\Shared\Messages\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Shared\Models\*.cs" Link="Linked\Shared\Models\%(Filename)%(Extension)" />
