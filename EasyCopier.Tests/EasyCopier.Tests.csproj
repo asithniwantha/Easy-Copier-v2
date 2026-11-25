@@ -27,6 +27,14 @@
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IIsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IIsoBootstrapperService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IsoBootstrapperService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageDetailsViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImageDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\Models\*.cs" Link="Linked\Features\History\Models\%(Filename)%(Extension)" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\CopyHistoryService.cs" Link="Linked\Features\History\CopyHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\HistoryAnalysisService.cs" Link="Linked\Features\History\HistoryAnalysisService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\HistoryViewModel.cs" Link="Linked\Features\History\HistoryViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\ICopyHistoryService.cs" Link="Linked\Features\History\ICopyHistoryService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\IHistoryAnalysisService.cs" Link="Linked\Features\History\IHistoryAnalysisService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\IReportService.cs" Link="Linked\Features\History\IReportService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\History\ReportService.cs" Link="Linked\Features\History\ReportService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Library\Models\*.cs" Link="Linked\Features\Library\Models\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Features\Library\Metadata\*.cs" Link="Linked\Features\Library\Metadata\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Features\Library\Scanning\GameScannerService.cs" Link="Linked\Features\Library\Scanning\GameScannerService.cs" />
