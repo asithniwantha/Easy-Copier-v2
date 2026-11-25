@@ -27,3 +27,4 @@ public static class HistorySliceExtensions
         return services;
     }
 }
+

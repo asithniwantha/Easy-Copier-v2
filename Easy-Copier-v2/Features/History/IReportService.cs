@@ -12,3 +12,4 @@ public interface IReportService
     /// </summary>
     Task<bool> ExportHistoryToCsvAsync(string filePath, IEnumerable<CopyHistoryRecord> records);
 }
+

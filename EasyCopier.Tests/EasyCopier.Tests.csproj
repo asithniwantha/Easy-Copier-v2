@@ -74,6 +74,7 @@
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryContractModels.cs" Link="Linked\Features\Shell\Contracts\LibraryContractModels.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\LibrarySelectionCoordinator.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryTabViewModelBase.cs" Link="Linked\Features\Shell\Contracts\LibraryTabViewModelBase.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\ShellViewModel.cs" Link="Linked\Features\Shell\ShellViewModel.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\Models\*.cs" Link="Linked\Features\SmartAdder\Models\%(Filename)%(Extension)" />
     <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\ISmartAdderHistoryService.cs" Link="Linked\Features\SmartAdder\ISmartAdderHistoryService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\SmartAdder\SmartAdderHistoryService.cs" Link="Linked\Features\SmartAdder\SmartAdderHistoryService.cs" />
@@ -118,7 +119,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="**\.gitkeep" />
     <Folder Include="Features\History\" />
     <Folder Include="Features\Library\" />
     <Folder Include="Features\OsImageLauncher\" />

@@ -103,3 +103,4 @@ public class HistoryAnalysisService : IHistoryAnalysisService
         return [.. source.Select(s => new PeriodTotal(s.Label, s.Total, s.Failed, s.Bytes, max == 0 ? 0 : (double)s.Bytes / max))];
     }
 }
+

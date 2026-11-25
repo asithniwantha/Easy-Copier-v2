@@ -594,3 +594,4 @@ public sealed partial class ShellViewModel
         CancelAndDisposeTokenSource(ref _notificationCancellationTokenSource);
     }
 }
+

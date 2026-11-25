@@ -22,3 +22,4 @@ public interface IHistoryAnalysisService
     /// </summary>
     DashboardStats BuildDashboard(IEnumerable<CopyHistoryRecord> records, int rangeDays, int topCount = 5);
 }
+

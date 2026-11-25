@@ -36,3 +36,4 @@ public sealed partial class HistoryWindow : Window
         _ = RootFrame.Navigate(typeof(HistoryPage), ViewModel);
     }
 }
+
