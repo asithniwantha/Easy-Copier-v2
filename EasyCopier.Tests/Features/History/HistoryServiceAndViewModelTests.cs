@@ -17,7 +17,7 @@ public sealed class HistoryServiceAndViewModelTests : IAsyncLifetime, IDisposabl
     private readonly string _dbName = $"HistoryTest_{Guid.NewGuid():N}";
     private readonly string _tempRoot = Path.Combine(Path.GetTempPath(), $"EasyCopierHistoryTest_{Guid.NewGuid():N}");
     private SqliteConnection _anchorConnection = null!;
-    private ISqliteConnectionFactory _connectionFactory = null!;
+    private SqliteConnectionFactory _connectionFactory = null!;
 
     public HistoryServiceAndViewModelTests()
     {

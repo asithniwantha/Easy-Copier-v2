@@ -1,4 +1,4 @@
-name: CI x64 Compilation & Tests
+name: CI x64 Compilation
 
 on:
   push:
@@ -22,24 +22,34 @@ permissions:
   contents: read
 
 jobs:
-  build_and_test:
+  build:
     runs-on: windows-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '11.0.x'
 
-      - name: Restore dependencies
-        run: dotnet restore Easy-Copier-v2.slnx
+      - name: Build solution (x64) and capture log
+        id: build
+        shell: bash
+        run: |
+          set -o pipefail
+          dotnet build "Easy-Copier-v2.slnx" --configuration Release -p:Platform=x64 -tl:false -v m -p:EnforceCodeStyleInBuild=true -p:AnalysisLevel=latest-all 2>&1 | tee build.log
 
-      - name: Build solution (Release x64)
-        run: dotnet build Easy-Copier-v2.slnx --configuration Release --no-restore -p:Platform=x64 -tl:false -v m -p:EnforceCodeStyleInBuild=true -p:AnalysisLevel=latest-all
+      - name: Check logs for warnings or errors
+        if: always()
+        shell: bash
+        run: |
+          if grep -iE ": warning|: error|: message [a-zA-Z]+[0-9]+:" build.log > /dev/null; then
+            echo "Build warnings, errors, or analyzer messages detected:"
+            grep -iE ": warning|: error|: message [a-zA-Z]+[0-9]+:" build.log | head -n 150
+            exit 1
+          fi
 
       - name: Run unit and slice integration tests
-        run: dotnet test EasyCopier.Tests/EasyCopier.Tests.csproj --configuration Release --no-build --verbosity normal
-
+        run: dotnet test "EasyCopier.Tests/EasyCopier.Tests.csproj" --configuration Release --no-build --verbosity normal

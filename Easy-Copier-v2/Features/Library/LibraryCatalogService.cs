@@ -213,10 +213,11 @@ public sealed partial class LibraryCatalogService
     /// <inheritdoc />
     public async Task ScanLibraryAsync(CancellationToken cancellationToken = default)
     {
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        CancelAndReplaceTokenSource(ref _scanCancellationTokenSource, linkedCts);
+
         try
         {
-            CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            CancelAndReplaceTokenSource(ref _scanCancellationTokenSource, linkedCts);
             CancellationToken token = linkedCts.Token;
 
             _ = _dispatcherService.TryEnqueue(() =>
@@ -289,6 +290,7 @@ public sealed partial class LibraryCatalogService
         }
         finally
         {
+            _ = Interlocked.CompareExchange(ref _scanCancellationTokenSource, null, linkedCts);
             _ = _dispatcherService.TryEnqueue(() =>
             {
                 IsScanning = false;
@@ -315,11 +317,11 @@ public sealed partial class LibraryCatalogService
         AppSettings settings,
         CancellationToken cancellationToken)
     {
+        using CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        CancelAndReplaceTokenSource(ref _validationCancellationTokenSource, linkedCts);
+
         try
         {
-            CancellationTokenSource linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            CancelAndReplaceTokenSource(ref _validationCancellationTokenSource, linkedCts);
-
             CacheValidationOutcome validationResult = await _libraryCacheService
                 .ValidateCacheAsync(cache, settings, linkedCts.Token)
                 .ConfigureAwait(false);
@@ -353,6 +355,10 @@ public sealed partial class LibraryCatalogService
         {
             _logger.LogWarning(ex, "Error validating library cache.");
             _ = _dispatcherService.TryEnqueue(() => StatusMessage = $"Validation error: {ex.Message}");
+        }
+        finally
+        {
+            _ = Interlocked.CompareExchange(ref _validationCancellationTokenSource, null, linkedCts);
         }
     }
 
@@ -397,8 +403,14 @@ public sealed partial class LibraryCatalogService
         CancellationTokenSource? previous = Interlocked.Exchange(ref field, next);
         if (previous != null)
         {
-            previous.Cancel();
-            previous.Dispose();
+            try
+            {
+                previous.Cancel();
+            }
+            catch (ObjectDisposedException)
+            {
+                // Linked token source owner already disposed after finishing work.
+            }
         }
     }
 

@@ -109,6 +109,11 @@ public sealed class SettingsChangedMessagingTests : IDisposable
             .ReturnsAsync((IEnumerable<string> paths) =>
                 paths.Select(p => new SourceFolder(p, true, DateTime.UtcNow)).ToList());
 
+        Mock<IRufusExecutableResolver> rufusResolverMock = new();
+        rufusResolverMock
+            .Setup(r => r.ResolveLatestRufusPath(It.IsAny<string?>()))
+            .Returns((string? path) => path ?? string.Empty);
+
         using SettingsViewModel settingsVm = new(
             NullLogger<SettingsViewModel>.Instance,
             settingsService,
@@ -117,7 +122,7 @@ public sealed class SettingsChangedMessagingTests : IDisposable
             validatorMock.Object,
             Mock.Of<IProcessService>(),
             Mock.Of<IGameMetadataDownloader>(),
-            Mock.Of<IRufusExecutableResolver>(),
+            rufusResolverMock.Object,
             Mock.Of<IStartupService>(),
             dispatcher,
             Mock.Of<IUpdateService>(),
@@ -125,7 +130,7 @@ public sealed class SettingsChangedMessagingTests : IDisposable
             Mock.Of<IWindowService>(),
             messenger);
 
-        settingsVm.LoadSettings(await settingsService.LoadSettingsAsync());
+        await settingsVm.LoadSettingsAsync();
         settingsVm.PriceTier1 = "225";
         settingsVm.GameSourceFolders.Add(gameFolder);
         settingsVm.OsImageSourceFolders.Add(isoFolder);

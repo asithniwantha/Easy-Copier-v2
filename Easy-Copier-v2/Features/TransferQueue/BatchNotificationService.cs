@@ -116,9 +116,8 @@ public sealed class BatchNotificationService : IBatchNotificationService
             if (!AppNotificationManager.IsSupported())
             {
                 _logger.LogWarning(
-                    _processService.IsRunningAsAdministrator()
-                        ? "AppNotificationManager is not supported in elevated administrator context."
-                        : "AppNotificationManager.IsSupported() returned false. Skipping toast display.");
+                    "AppNotificationManager is not supported (RunningAsAdministrator={IsAdmin}). Skipping toast display.",
+                    _processService.IsRunningAsAdministrator());
                 return;
             }
 

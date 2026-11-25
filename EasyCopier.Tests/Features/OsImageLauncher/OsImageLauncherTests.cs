@@ -49,9 +49,9 @@ public sealed class OsImageLauncherTests : IDisposable
         string isoPath = Path.Combine(_tempRoot, "windows11.iso");
         string oldRufus = Path.Combine(_tempRoot, "rufus-4.5.exe");
         string latestRufus = Path.Combine(_tempRoot, "rufus-4.7.exe");
-        File.WriteAllText(isoPath, "iso");
-        File.WriteAllText(oldRufus, "old");
-        File.WriteAllText(latestRufus, "new");
+        await File.WriteAllTextAsync(isoPath, "iso");
+        await File.WriteAllTextAsync(oldRufus, "old");
+        await File.WriteAllTextAsync(latestRufus, "new");
 
         AppSettings savedSettings = new() { RufusExecutablePath = oldRufus };
 
@@ -81,9 +81,9 @@ public sealed class OsImageLauncherTests : IDisposable
     [Fact]
     public async Task OsImagesTabViewModel_ScansFiltersSortsAndLaunchesRufus()
     {
-        File.WriteAllBytes(Path.Combine(_tempRoot, "Ubuntu.iso"), new byte[100]);
-        File.WriteAllBytes(Path.Combine(_tempRoot, "Arch.iso"), new byte[500]);
-        File.WriteAllText(Path.Combine(_tempRoot, "readme.txt"), "ignore");
+        await File.WriteAllBytesAsync(Path.Combine(_tempRoot, "Ubuntu.iso"), new byte[100]);
+        await File.WriteAllBytesAsync(Path.Combine(_tempRoot, "Arch.iso"), new byte[500]);
+        await File.WriteAllTextAsync(Path.Combine(_tempRoot, "readme.txt"), "ignore");
 
         Mock<ISettingsService> settingsMock = new();
         settingsMock.Setup(s => s.LoadSettingsAsync()).ReturnsAsync(new AppSettings

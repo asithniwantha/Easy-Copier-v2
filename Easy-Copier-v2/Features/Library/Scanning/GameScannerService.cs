@@ -33,7 +33,7 @@ public class GameScannerService : IGameScannerService
         {
             string folderName = Path.GetFileName(folderPath).TrimEnd();
 
-            if (folderName.StartsWith('$')
+            if ((folderName.Length > 0 && folderName[0] == '$')
                 || string.Equals(folderName, "recyclebin", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(folderName, "System Volume Information", StringComparison.OrdinalIgnoreCase))
             {
@@ -419,7 +419,7 @@ public class GameScannerService : IGameScannerService
             : extensions
                 .Split(ExtensionSeparators, StringSplitOptions.RemoveEmptyEntries)
                 .Select(e => e.Trim())
-                .Select(e => e.StartsWith('.') ? e : "." + e)
+                .Select(e => e.Length > 0 && e[0] == '.' ? e : "." + e)
                 .ToList();
     }
 
