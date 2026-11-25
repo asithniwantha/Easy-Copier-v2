@@ -66,13 +66,13 @@ public partial class AboutViewModel : CloseableViewModelBase
     [RelayCommand]
     private void OpenGitHubRepo()
     {
-        _processService.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier");
+        _processService.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier-v2");
     }
 
     [RelayCommand]
     private void OpenGitHubIssues()
     {
-        _processService.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier/issues");
+        _processService.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier-v2/issues");
     }
 
     [RelayCommand]

@@ -19,8 +19,8 @@ public sealed class AboutViewModelTests
         vm.OpenGitHubIssuesCommand.Execute(null);
         vm.CopyVersionInfoCommand.Execute(null);
 
-        processMock.Verify(p => p.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier"), Times.Once);
-        processMock.Verify(p => p.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier/issues"), Times.Once);
+        processMock.Verify(p => p.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier-v2"), Times.Once);
+        processMock.Verify(p => p.OpenInExplorer("https://github.com/asithniwantha/Easy-Copier-v2/issues"), Times.Once);
         clipboardMock.Verify(c => c.SetText(It.Is<string>(s => s.Contains("Easy Copier v", StringComparison.Ordinal))), Times.Once);
         Assert.True(vm.IsCopied);
         Assert.Equal("Asith Niwantha", vm.DeveloperInfo);
