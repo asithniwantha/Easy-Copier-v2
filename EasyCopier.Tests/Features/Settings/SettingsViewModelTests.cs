@@ -32,7 +32,7 @@ public sealed class SettingsViewModelTests
         _folderValidatorMock
             .Setup(v => v.ValidateSourceFoldersAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync((IEnumerable<string> paths) =>
-                paths.Select(p => new SourceFolder(p, true, DateTime.UtcNow)).ToList());
+                [.. paths.Select(p => new SourceFolder(p, true, DateTime.UtcNow))]);
 
         _settingsServiceMock
             .Setup(s => s.SaveSettingsAsync(It.IsAny<AppSettings>()))
@@ -127,7 +127,7 @@ public sealed class SettingsViewModelTests
         _folderValidatorMock
             .Setup(v => v.ValidateSourceFoldersAsync(It.IsAny<IEnumerable<string>>()))
             .ReturnsAsync((IEnumerable<string> paths) =>
-                paths.Select(p => new SourceFolder(p, false, DateTime.UtcNow)).ToList());
+                [.. paths.Select(p => new SourceFolder(p, false, DateTime.UtcNow))]);
 
         _dialogServiceMock
             .Setup(d => d.ShowConfirmationDialogAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
