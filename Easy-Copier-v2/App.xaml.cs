@@ -1,6 +1,7 @@
 ﻿using EasyCopier.Features.Shell;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
+using Serilog;
 
 namespace EasyCopier;
 
@@ -10,10 +11,14 @@ namespace EasyCopier;
 public partial class App : Application
 {
     private Window? _window;
+    private IServiceProvider? _serviceProvider;
+    private bool _servicesDisposed;
 
     public static new App Current => (App)Application.Current;
 
-    public IServiceProvider Services { get; }
+    public Window? MainWindow { get; private set; }
+
+    public IServiceProvider Services => _serviceProvider ?? throw new InvalidOperationException("Services not initialized");
 
     /// <summary>
     /// Initializes the singleton application object and configures the DI service provider.
@@ -21,7 +26,7 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
-        Services = CompositionRoot.ConfigureServices();
+        _serviceProvider = CompositionRoot.ConfigureServices();
     }
 
     /// <summary>
@@ -31,6 +36,30 @@ public partial class App : Application
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         _window = Services.GetRequiredService<MainWindow>();
+        MainWindow = _window;
+        _window.Closed += (_, _) => DisposeServices();
         _window.Activate();
+    }
+
+    /// <summary>
+    /// Disposes the dependency injection service provider and flushes pending log sinks.
+    /// </summary>
+    public void DisposeServices()
+    {
+        if (_servicesDisposed)
+        {
+            return;
+        }
+
+        _servicesDisposed = true;
+        MainWindow = null;
+
+        if (_serviceProvider is IDisposable disposable)
+        {
+            _serviceProvider = null;
+            disposable.Dispose();
+        }
+
+        Log.CloseAndFlush();
     }
 }

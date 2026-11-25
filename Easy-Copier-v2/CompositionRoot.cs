@@ -1,5 +1,5 @@
-using CommunityToolkit.Mvvm.Messaging;
 using EasyCopier.Features.Shell;
+using EasyCopier.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyCopier;
@@ -13,10 +13,9 @@ public static class CompositionRoot
     {
         var services = new ServiceCollection();
 
-        services.AddSingleton<IMessenger>(WeakReferenceMessenger.Default);
+        services.AddSharedFoundation();
         services.AddShellSlice();
 
         return services.BuildServiceProvider();
     }
 }
-

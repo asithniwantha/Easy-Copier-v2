@@ -10,7 +10,7 @@ Follow all architecture, namespace, and verification rules defined in `.github/c
 
 ## Strict Guardrails
 1. Rule of Three for `Shared/`: Only place code in `Shared/` if 3+ slices use it. Keep feature-specific models, converters, and behaviors inside `Features/<Slice>/`.
-2. No Cross-Slice Coupling: A slice under `Features/<A>/` must NEVER reference ViewModels or internal services in `Features/<B>/`. Use immutable `readonly record struct` messages in `Shared/Messages/` via `WeakReferenceMessenger`.
+2. No Cross-Slice Coupling: A slice under `Features/<A>/` must NEVER reference ViewModels or internal services in `Features/<B>/`. Use immutable `sealed record` messages in `Shared/Messages/` via `WeakReferenceMessenger` (required by `CommunityToolkit.Mvvm`'s `where TMessage : class` constraint; nested item DTOs like `TransferSourceItem` use `readonly record struct`). Place cross-tab library contracts (`GameEntry`, `LibraryCategory`, `GameCategory`, `LibraryCardControl`, `AutoSuggestBoxSearchBehavior`, `IFlyoutContentProvider`) in `Features/Shell/Contracts/` so `OsImageLauncher` and `Library` stay decoupled.
 3. Plain DI Only: Do NOT install or use MediatR. Inject services/handlers directly via constructors. Every slice exports one DI extension method: `Add<SliceName>Slice(this IServiceCollection services)`.
 4. Namespace & XAML Sync: Whenever moving a `.cs` or `.xaml` file, update its C# namespace, `x:Class`, `xmlns:` prefixes, and `App.xaml` ResourceDictionary references immediately.
 5. Headless Testability: Keep calculations, validation, and SQLite logic free of WinUI/XAML types so `EasyCopier.Tests` runs headlessly via `dotnet test`.
