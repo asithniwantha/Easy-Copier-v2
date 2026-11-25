@@ -20,7 +20,7 @@ public sealed class TransferToHistoryMessagingTests : IAsyncLifetime
 {
     private readonly string _dbName = $"TransferHistoryMsg_{Guid.NewGuid():N}";
     private SqliteConnection _anchorConnection = null!;
-    private ISqliteConnectionFactory _connectionFactory = null!;
+    private SqliteConnectionFactory _connectionFactory = null!;
 
     public async Task InitializeAsync()
     {

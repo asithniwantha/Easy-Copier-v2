@@ -37,6 +37,10 @@ public sealed class SettingsViewModelTests
         _settingsServiceMock
             .Setup(s => s.SaveSettingsAsync(It.IsAny<AppSettings>()))
             .Returns(Task.CompletedTask);
+
+        _rufusResolverMock
+            .Setup(r => r.ResolveLatestRufusPath(It.IsAny<string?>()))
+            .Returns((string? path) => path ?? string.Empty);
     }
 
     private SettingsViewModel CreateViewModel() => new(
@@ -58,12 +62,14 @@ public sealed class SettingsViewModelTests
     [Fact]
     public async Task SaveAndCloseCommand_WhenSourcePathsAndPriceTiersChange_BroadcastsAccurateSettingsChangedMessage()
     {
-        using SettingsViewModel vm = CreateViewModel();
-        vm.LoadSettings(new AppSettings
+        _settingsServiceMock.Setup(s => s.LoadSettingsAsync()).ReturnsAsync(new AppSettings
         {
             PriceTier1 = 100,
             GameSourceFolders = [@"C:\Games"]
         });
+
+        using SettingsViewModel vm = CreateViewModel();
+        await vm.LoadSettingsAsync();
 
         SettingsChangedMessage? received = null;
         _messenger.Register<SettingsViewModelTests, SettingsChangedMessage>(this, (_, msg) => received = msg);
@@ -87,12 +93,14 @@ public sealed class SettingsViewModelTests
     [Fact]
     public async Task SaveCommand_WhenOnlyToggleChanges_BroadcastsFalseFlagsInSettingsChangedMessage()
     {
-        using SettingsViewModel vm = CreateViewModel();
-        vm.LoadSettings(new AppSettings
+        _settingsServiceMock.Setup(s => s.LoadSettingsAsync()).ReturnsAsync(new AppSettings
         {
             PriceTier1 = 100,
             PlayNotificationSounds = true
         });
+
+        using SettingsViewModel vm = CreateViewModel();
+        await vm.LoadSettingsAsync();
 
         SettingsChangedMessage? received = null;
         _messenger.Register<SettingsViewModelTests, SettingsChangedMessage>(this, (_, msg) => received = msg);
@@ -108,11 +116,13 @@ public sealed class SettingsViewModelTests
     [Fact]
     public async Task SaveAndCloseCommand_WhenFolderInaccessibleAndCancelled_DoesNotSaveOrBroadcast()
     {
-        using SettingsViewModel vm = CreateViewModel();
-        vm.LoadSettings(new AppSettings
+        _settingsServiceMock.Setup(s => s.LoadSettingsAsync()).ReturnsAsync(new AppSettings
         {
             GameSourceFolders = [@"Z:\Missing"]
         });
+
+        using SettingsViewModel vm = CreateViewModel();
+        await vm.LoadSettingsAsync();
 
         _folderValidatorMock
             .Setup(v => v.ValidateSourceFoldersAsync(It.IsAny<IEnumerable<string>>()))

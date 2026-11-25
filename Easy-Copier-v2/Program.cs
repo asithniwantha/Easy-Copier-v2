@@ -21,7 +21,8 @@ public static class Program
             var context = new DispatcherQueueSynchronizationContext(
                 DispatcherQueue.GetForCurrentThread());
             SynchronizationContext.SetSynchronizationContext(context);
-            new App();
+            App app = new();
+            GC.KeepAlive(app);
         });
     }
 }

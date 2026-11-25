@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '11.0.x'
 
@@ -47,7 +47,7 @@ jobs:
           mv Releases/*-Setup.exe Releases/EasyCopier-${{ steps.get_version.outputs.VERSION }}-Setup.exe
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             Releases/*-full.nupkg
@@ -55,4 +55,3 @@ jobs:
             Releases/*.json
             Releases/RELEASES
           generate_release_notes: true
-

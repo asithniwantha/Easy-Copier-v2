@@ -48,7 +48,7 @@ public sealed class DriveValidationAndVerificationTests : IDisposable
     public async Task DriveValidationService_AcceptsAccessibleIsoFileOnExFatDrive()
     {
         string isoFile = Path.Combine(_tempRoot, "ubuntu.iso");
-        File.WriteAllBytes(isoFile, new byte[2048]);
+        await File.WriteAllBytesAsync(isoFile, new byte[2048]);
         string destRoot = Path.Combine(_tempRoot, "Dest");
         Directory.CreateDirectory(destRoot);
 

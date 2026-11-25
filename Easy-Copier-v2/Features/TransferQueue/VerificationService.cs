@@ -218,8 +218,8 @@ public sealed class VerificationService : IVerificationService
             dstPath,
             fileSize,
             progress,
-            cancellationToken,
-            () => IncrementalHashHandle.CreateXxHash64());
+            () => IncrementalHashHandle.CreateXxHash64(),
+            cancellationToken);
     }
 
     private static Task<bool> CompareSha256Async(
@@ -234,8 +234,8 @@ public sealed class VerificationService : IVerificationService
             dstPath,
             fileSize,
             progress,
-            cancellationToken,
-            () => IncrementalHashHandle.CreateSha256());
+            () => IncrementalHashHandle.CreateSha256(),
+            cancellationToken);
     }
 
     private static async Task<bool> CompareStreamsAsync(
@@ -243,8 +243,8 @@ public sealed class VerificationService : IVerificationService
         string dstPath,
         long fileSize,
         IProgress<double>? progress,
-        CancellationToken cancellationToken,
-        Func<IncrementalHashHandle> createHasher)
+        Func<IncrementalHashHandle> createHasher,
+        CancellationToken cancellationToken)
     {
         using IncrementalHashHandle srcHasher = createHasher();
         using IncrementalHashHandle dstHasher = createHasher();

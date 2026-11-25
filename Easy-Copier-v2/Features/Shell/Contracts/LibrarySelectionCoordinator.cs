@@ -92,6 +92,7 @@ public sealed class LibrarySelectionCoordinator : ILibrarySelectionCoordinator, 
     /// <inheritdoc />
     public void Receive(SettingsChangedMessage message)
     {
+        ArgumentNullException.ThrowIfNull(message);
         _cachedSettings = null;
         if (message.PriceTiersUpdated && HasSelection)
         {
