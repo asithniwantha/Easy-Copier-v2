@@ -1,18 +1,501 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Page
     x:Class="EasyCopier.Features.Shell.MainPage"
+    x:Name="RootPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:EasyCopier.Features.Shell"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:libraryTabs="using:EasyCopier.Features.Library.Tabs"
+    xmlns:osImages="using:EasyCopier.Features.OsImageLauncher"
+    xmlns:sharedModels="using:EasyCopier.Shared.Models"
+    xmlns:smartAdder="using:EasyCopier.Features.SmartAdder"
+    xmlns:transferModels="using:EasyCopier.Features.TransferQueue.Models"
+    xmlns:transferQueue="using:EasyCopier.Features.TransferQueue"
     mc:Ignorable="d">
 
-    <!--
-        This is the main content area of your application.
-        Add your UI elements here — for example, controls, layouts, and data-bound views.
-        Use 'dotnet new winui-page' to create additional pages and navigate to them via
-        the Frame in MainWindow (RootFrame).
-    -->
-    <Grid />
+    <Page.Resources>
+        <transferQueue:QueueStatusToBrushConverter x:Key="QueueStatusToBrushConverter" />
+    </Page.Resources>
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Consolidated Single-Slot Notification Area (Priority: Update Ready > Update Available > Global In-App) -->
+        <Grid Grid.Row="0">
+            <InfoBar IsOpen="{x:Bind ViewModel.IsUpdateReadyToInstall, Mode=OneWay}"
+                     Severity="Success"
+                     Title="Update Ready"
+                     Message="{x:Bind ViewModel.UpdateMessage, Mode=OneWay}"
+                     IsClosable="False"
+                     Margin="16,8,16,0">
+                <InfoBar.ActionButton>
+                    <Button Content="Restart &amp; Apply" Command="{x:Bind ViewModel.RestartAndApplyUpdateCommand}" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+
+            <InfoBar IsOpen="{x:Bind ViewModel.ShowUpdateAvailableNotification, Mode=OneWay}"
+                     Severity="Success"
+                     Title="Update Available"
+                     Message="{x:Bind ViewModel.UpdateMessage, Mode=OneWay}"
+                     IsClosable="False"
+                     Margin="16,8,16,0">
+                <InfoBar.ActionButton>
+                    <Button Content="Download" Command="{x:Bind ViewModel.DownloadUpdateCommand}" />
+                </InfoBar.ActionButton>
+            </InfoBar>
+
+            <InfoBar IsOpen="{x:Bind ViewModel.CanDisplayGlobalNotification, Mode=OneWay}"
+                     Title="{x:Bind ViewModel.GlobalNotificationTitle, Mode=OneWay}"
+                     Message="{x:Bind ViewModel.GlobalNotificationMessage, Mode=OneWay}"
+                     Severity="{x:Bind ViewModel.GlobalNotificationSeverity, Mode=OneWay, Converter={StaticResource SeverityConverter}}"
+                     IsClosable="True"
+                     CloseButtonClick="GlobalNotification_CloseButtonClick"
+                     Margin="16,8,16,0" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup>
+                    <VisualState x:Name="WideLayout">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="1200" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="ActionCenterBorder.Width" Value="400" />
+                        </VisualState.Setters>
+                    </VisualState>
+                    <VisualState x:Name="NarrowLayout">
+                        <VisualState.StateTriggers>
+                            <AdaptiveTrigger MinWindowWidth="0" />
+                        </VisualState.StateTriggers>
+                        <VisualState.Setters>
+                            <Setter Target="ActionCenterBorder.Width" Value="340" />
+                        </VisualState.Setters>
+                    </VisualState>
+                </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="480" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" Padding="16,16,8,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Library" Style="{StaticResource SectionHeaderStyle}" Margin="0,10,0,0" />
+
+                <CommandBar Grid.Row="1" DefaultLabelPosition="Right"
+                            Background="Transparent" HorizontalAlignment="Left"
+                            Margin="0,0,0,8">
+                    <AppBarButton Icon="Add" Label="Add Folder" Command="{x:Bind ViewModel.AddSourceFolderCommand}" />
+                    <AppBarButton Icon="Refresh" Label="Scan Library" Command="{x:Bind ViewModel.ScanLibraryCommand}" />
+                    <AppBarButton Icon="ClearSelection" Label="Deselect All" Command="{x:Bind ViewModel.ClearSelectionCommand}" />
+                    <AppBarSeparator />
+                    <AppBarButton Icon="Clock" Label="History" Command="{x:Bind ViewModel.OpenHistoryCommand}" />
+                    <AppBarButton Icon="Setting" Label="Settings" Command="{x:Bind ViewModel.OpenSettingsCommand}" />
+                    <AppBarButton Icon="Help" Label="About" Command="{x:Bind ViewModel.OpenAboutCommand}" />
+                </CommandBar>
+
+                <Pivot x:Name="LibraryPivot" Grid.Row="2" SelectedIndex="{x:Bind ViewModel.CurrentTabIndex, Mode=TwoWay}">
+                    <PivotItem Header="Games">
+                        <libraryTabs:GamesTabView ViewModel="{x:Bind ViewModel.GamesTabViewModel, Mode=OneWay}" />
+                    </PivotItem>
+
+                    <PivotItem Header="Apps">
+                        <libraryTabs:AppsTabView ViewModel="{x:Bind ViewModel.AppsTabViewModel, Mode=OneWay}" />
+                    </PivotItem>
+
+                    <PivotItem Header="Films &amp; TV">
+                        <libraryTabs:TvAndFilmsTabView ViewModel="{x:Bind ViewModel.TvAndFilmsTabViewModel, Mode=OneWay}" />
+                    </PivotItem>
+
+                    <PivotItem Header="OS Images">
+                        <osImages:OsImagesTabView ViewModel="{x:Bind ViewModel.OsImagesTabViewModel, Mode=OneWay}" />
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+
+            <Border x:Name="ActionCenterBorder" Grid.Column="1" Style="{StaticResource ActionPanelStyle}" Width="380" MinWidth="320" MaxWidth="440">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Action Center" Style="{StaticResource SectionHeaderStyle}" />
+
+                    <StackPanel Grid.Row="1" Spacing="8" Margin="0,0,0,16">
+                        <TextBlock Text="Target Drive" FontWeight="SemiBold" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox Grid.Column="0"
+                                      ItemsSource="{x:Bind ViewModel.TransferQueueViewModel.AvailableDrives, Mode=OneWay}"
+                                      SelectedItem="{x:Bind ViewModel.TransferQueueViewModel.SelectedDrive, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      PlaceholderText="No removable drives found">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="transferModels:RemovableDrive">
+                                        <Grid Margin="0,4,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                <TextBlock FontWeight="SemiBold">
+                                                    <Run Text="{x:Bind DriveLetter}" />
+                                                    <Run Text="{x:Bind DriveLabel}" />
+                                                </TextBlock>
+                                                <TextBlock Opacity="0.7" FontSize="12">
+                                                    <Run Text="{x:Bind Brand}" />
+                                                    <Run Text="•" />
+                                                    <Run Text="{x:Bind FileSystem}" />
+                                                </TextBlock>
+                                                <TextBlock Opacity="0.7" FontSize="12"
+                                                           Text="{x:Bind FreeBytes, Converter={StaticResource BytesToSizeConverter}}" />
+                                            </StackPanel>
+
+                                            <Border Grid.Column="1" VerticalAlignment="Center"
+                                                    Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                                    CornerRadius="4" Padding="8,4" Margin="8,0,0,0">
+                                                <TextBlock Text="{x:Bind TotalBytes, Converter={StaticResource BytesToSizeConverter}}"
+                                                           FontWeight="Bold" FontSize="14"
+                                                           Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <Button Grid.Column="1" Margin="4,0,0,0"
+                                    Padding="8"
+                                    VerticalAlignment="Stretch"
+                                    IsEnabled="{x:Bind ViewModel.TransferQueueViewModel.HasSelectedDrive, Mode=OneWay}"
+                                    Command="{x:Bind ViewModel.TransferQueueViewModel.OpenDriveInExplorerCommand}"
+                                    ToolTipService.ToolTip="Open drive in File Explorer">
+                                <FontIcon Glyph="&#xE838;" FontSize="14" />
+                            </Button>
+                            <Button Grid.Column="2" Margin="4,0,0,0"
+                                    Padding="8"
+                                    VerticalAlignment="Stretch"
+                                    IsEnabled="{x:Bind ViewModel.TransferQueueViewModel.HasSelectedDrive, Mode=OneWay}"
+                                    Command="{x:Bind ViewModel.TransferQueueViewModel.FormatDriveCommand}"
+                                    ToolTipService.ToolTip="Format drive">
+                                <FontIcon Glyph="&#xE75C;" FontSize="14" />
+                            </Button>
+                            <Button Grid.Column="3" Margin="4,0,0,0"
+                                    Padding="8"
+                                    VerticalAlignment="Stretch"
+                                    Command="{x:Bind ViewModel.TransferQueueViewModel.RefreshDrivesCommand}"
+                                    ToolTipService.ToolTip="Refresh drives">
+                                <FontIcon Glyph="&#xE72C;" FontSize="14" />
+                            </Button>
+                        </Grid>
+
+                        <Grid Visibility="{x:Bind ViewModel.TransferQueueViewModel.HasSelectedDrive, Mode=OneWay}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ProgressBar Grid.Row="0"
+                                         Value="{x:Bind ViewModel.TransferQueueViewModel.SelectedDrive.UsedPercentage, Mode=OneWay}"
+                                         Maximum="100" MinHeight="8" CornerRadius="4" Margin="0,4,0,4" />
+                            <TextBlock Grid.Row="1" FontSize="12" Opacity="0.7"
+                                       Text="{x:Bind ViewModel.TransferQueueViewModel.DriveSpaceSummary, Mode=OneWay}" />
+                            <TextBlock Grid.Row="2" FontSize="12" Opacity="0.7"
+                                       Text="{x:Bind ViewModel.TransferQueueViewModel.DriveDetailsSummary, Mode=OneWay}" />
+                        </Grid>
+
+                        <Grid Visibility="{x:Bind ViewModel.TransferQueueViewModel.HasCustomDestination, Mode=OneWay}" Margin="0,4,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="{x:Bind ViewModel.TransferQueueViewModel.CustomDestinationPath, Mode=OneWay}"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource SystemFillColorCautionBrush}"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"
+                                       ToolTipService.ToolTip="Custom Destination Path" />
+                            <Button Grid.Column="1"
+                                    Command="{x:Bind ViewModel.TransferQueueViewModel.ClearCustomDestinationCommand}"
+                                    Background="Transparent" BorderThickness="0" Padding="4" Margin="4,0,0,0"
+                                    ToolTipService.ToolTip="Clear custom destination">
+                                <FontIcon Glyph="&#xE711;" FontSize="10" />
+                            </Button>
+                        </Grid>
+
+                        <Border Height="1" Margin="0,8,0,0"
+                                Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <ItemsControl Grid.Row="0" ItemsSource="{x:Bind ViewModel.TransferQueueViewModel.ValidationMessages, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="sharedModels:ValidationResult">
+                                    <InfoBar IsOpen="True" Message="{x:Bind Message}" Margin="0,0,0,4"
+                                             Severity="{x:Bind Severity, Converter={StaticResource SeverityConverter}}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <Grid Grid.Row="1" Margin="0,8,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE896;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
+                                <TextBlock Text="Transfer Queue" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                                <Border Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="10" Padding="7,1"
+                                        Visibility="{x:Bind ViewModel.TransferQueueViewModel.HasQueueItems, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                    <TextBlock Text="{x:Bind ViewModel.TransferQueueViewModel.QueueCount, Mode=OneWay}" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+                                </Border>
+                            </StackPanel>
+                            <Button Grid.Column="1"
+                                    Command="{x:Bind ViewModel.TransferQueueViewModel.ClearFinishedQueueItemsCommand}"
+                                    Style="{StaticResource SubtleButtonStyle}" Padding="8,4"
+                                    ToolTipService.ToolTip="Clear completed and failed items">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE74D;" FontSize="12" />
+                                    <TextBlock Text="Clear finished" FontSize="12" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" Opacity="0.75"
+                                    Visibility="{x:Bind ViewModel.TransferQueueViewModel.IsQueueEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <FontIcon Glyph="&#xE896;" FontSize="40" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock Text="Your queue is empty" Style="{ThemeResource BodyStrongTextBlockStyle}" HorizontalAlignment="Center" />
+                            <TextBlock Text="Select items and click Add to Copy Queue" Style="{ThemeResource CaptionTextBlockStyle}" TextWrapping="Wrap"
+                                       TextAlignment="Center" MaxWidth="220" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+
+                        <ScrollViewer Grid.Row="2">
+                            <ItemsControl ItemsSource="{x:Bind ViewModel.TransferQueueViewModel.TransferQueue, Mode=OneWay}">
+                                <ItemsControl.ItemContainerTransitions>
+                                    <TransitionCollection>
+                                        <EntranceThemeTransition IsStaggeringEnabled="True" />
+                                        <RepositionThemeTransition />
+                                    </TransitionCollection>
+                                </ItemsControl.ItemContainerTransitions>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="transferModels:TransferQueueItem">
+                                        <Border Style="{StaticResource QueueCardStyle}" Padding="0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="4" />
+                                                    <ColumnDefinition Width="*" />
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0" CornerRadius="8,0,0,8"
+                                                        Background="{x:Bind Status, Mode=OneWay, Converter={StaticResource QueueStatusToBrushConverter}}" />
+
+                                                <StackPanel Grid.Column="1" Spacing="6" Padding="12">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Text="{x:Bind ItemsSummary}" Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <FontIcon Glyph="{x:Bind StatusGlyph, Mode=OneWay}" FontSize="12"
+                                                                      Foreground="{x:Bind Status, Mode=OneWay, Converter={StaticResource QueueStatusToBrushConverter}}" />
+                                                            <TextBlock Text="{x:Bind StatusLabel, Mode=OneWay}" FontSize="12" FontWeight="SemiBold"
+                                                                       Foreground="{x:Bind Status, Mode=OneWay, Converter={StaticResource QueueStatusToBrushConverter}}" />
+                                                        </StackPanel>
+                                                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" Margin="6,0,0,0" VerticalAlignment="Center">
+                                                            <Button Style="{StaticResource SubtleButtonStyle}"
+                                                                    Padding="4"
+                                                                    ToolTipService.ToolTip="Retry transfer"
+                                                                    Visibility="{x:Bind CanRetry, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                    Command="{Binding ElementName=RootPage, Path=ViewModel.TransferQueueViewModel.RetryQueueItemCommand}"
+                                                                    CommandParameter="{x:Bind}">
+                                                                <FontIcon Glyph="&#xE72C;" FontSize="11" Foreground="{ThemeResource AccentFillColorDefaultBrush}" />
+                                                            </Button>
+                                                            <Button Style="{StaticResource SubtleButtonStyle}"
+                                                                    Padding="4"
+                                                                    ToolTipService.ToolTip="Cancel transfer"
+                                                                    Visibility="{x:Bind IsActive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                    Command="{Binding ElementName=RootPage, Path=ViewModel.TransferQueueViewModel.CancelQueueItemCommand}"
+                                                                    CommandParameter="{x:Bind}">
+                                                                <FontIcon Glyph="&#xE711;" FontSize="11" Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </Grid>
+
+                                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                                        <Border Background="{ThemeResource ControlFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1">
+                                                            <TextBlock Text="{x:Bind TargetDrive.DriveLetter}" FontSize="11" />
+                                                        </Border>
+                                                        <Border Background="{ThemeResource ControlFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1">
+                                                            <TextBlock Text="{x:Bind TotalBytes, Converter={StaticResource BytesToSizeConverter}}" FontSize="11" />
+                                                        </Border>
+                                                        <Border Background="{ThemeResource ControlFillColorSecondaryBrush}" CornerRadius="4" Padding="6,1">
+                                                            <TextBlock FontSize="11">
+                                                                <Run Text="Rs." />
+                                                                <Run Text="{x:Bind TotalPrice}" />
+                                                            </TextBlock>
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                    <TextBlock Text="{x:Bind StatusMessage, Mode=OneWay}"
+                                                               FontSize="12" Opacity="0.7" TextWrapping="Wrap" />
+
+                                                    <Grid Visibility="{x:Bind IsActive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <ProgressBar Grid.Column="0" Minimum="0" Maximum="100" Value="{x:Bind ProgressPercentage, Mode=OneWay}" VerticalAlignment="Center" Margin="0,0,8,0" CornerRadius="3" MinHeight="6" />
+                                                        <TextBlock Grid.Column="1" Text="{x:Bind SpeedText, Mode=OneWay}" FontSize="11" Opacity="0.6" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                                        <TextBlock Grid.Column="2" Text="{x:Bind RemainingTimeText, Mode=OneWay}" FontSize="11" Opacity="0.6" VerticalAlignment="Center" />
+                                                    </Grid>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </Grid>
+
+                    <Grid Grid.Row="3" Margin="0,8,0,8">
+                        <!-- Empty State -->
+                        <Border Background="{ThemeResource ControlFillColorSecondaryBrush}" CornerRadius="8" Padding="14,12"
+                                Visibility="{x:Bind ViewModel.HasSelectedGames, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                                <FontIcon Glyph="&#xE73A;" FontSize="18" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                <StackPanel VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="No items selected" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                                    <TextBlock Text="Select items from the library to copy" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Highlighted Card State -->
+                        <Grid Visibility="{x:Bind ViewModel.HasSelectedGames, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Border Background="{ThemeResource AccentFillColorDefaultBrush}" Opacity="0.12" CornerRadius="8" />
+                            <Border BorderBrush="{ThemeResource AccentFillColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="12,10">
+                                <Grid ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" Background="{ThemeResource AccentFillColorDefaultBrush}" CornerRadius="14"
+                                            MinWidth="28" Height="28" Padding="8,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{x:Bind ViewModel.SelectedGamesCount, Mode=OneWay}"
+                                                   Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}"
+                                                   FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Selected" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <FontIcon Glyph="&#xE7F1;" FontSize="14" VerticalAlignment="Center" />
+                                            <TextBlock Text="{x:Bind ViewModel.SelectedGamesTotalBytes, Mode=OneWay, Converter={StaticResource BytesToSizeConverter}}"
+                                                       FontFamily="Consolas" FontWeight="Bold" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <TextBlock Text="Total" FontSize="11" HorizontalAlignment="Right" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <TextBlock FontFamily="Consolas" FontWeight="Bold" FontSize="16"
+                                                   Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}">
+                                            <Run Text="Rs." />
+                                            <Run Text="{x:Bind ViewModel.SelectedGamesTotalPrice, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="4" Margin="0,0,0,8" Visibility="{x:Bind ViewModel.IsOsImagesTabActive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0" Style="{StaticResource AccentButtonStyle}"
+                                Command="{x:Bind ViewModel.CopySelectedGamesCommand}"
+                                HorizontalAlignment="Stretch" Margin="0,0,4,0" Padding="12,8">
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE896;" FontSize="14" />
+                                <TextBlock Text="Add to Copy Queue" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="1" Padding="8" VerticalAlignment="Stretch"
+                                Command="{x:Bind ViewModel.TransferQueueViewModel.SelectCustomDestinationCommand}"
+                                IsEnabled="{x:Bind ViewModel.TransferQueueViewModel.HasSelectedDrive, Mode=OneWay}"
+                                ToolTipService.ToolTip="Define destination folder">
+                            <FontIcon Glyph="&#xE8D5;" FontSize="14" />
+                        </Button>
+                    </Grid>
+
+                    <Button Grid.Row="4" Style="{StaticResource AccentButtonStyle}"
+                            Command="{x:Bind ViewModel.OpenInRufusCommand}"
+                            Visibility="{x:Bind ViewModel.IsOsImagesTabActive, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                            HorizontalAlignment="Stretch" Margin="0,0,0,8" Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                            <FontIcon Glyph="&#xE7FC;" FontSize="14" />
+                            <TextBlock Text="Open in Rufus" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+
+                    <Grid Grid.Row="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ProgressBar Grid.Row="0" IsIndeterminate="True"
+                                     Visibility="{x:Bind ViewModel.TransferQueueViewModel.IsTransferring, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}"
+                                     Margin="0,0,0,4" />
+                        <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                                   TextWrapping="Wrap" FontSize="12" Opacity="0.8" />
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <smartAdder:SmartAdderControl Grid.Column="0"
+                                          ViewModel="{x:Bind ViewModel.SmartAdderViewModel}"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Top"
+                                          Margin="0,0,8,0" />
+        </Grid>
+    </Grid>
 </Page>

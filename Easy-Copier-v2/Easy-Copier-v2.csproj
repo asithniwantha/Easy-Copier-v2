@@ -52,28 +52,4 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
-	<ItemGroup>
-	  <None Remove="**\.gitkeep" />
-	  <Folder Include="Features\History\" />
-	  <Folder Include="Features\Library\Converters\" />
-	  <Folder Include="Features\Library\Details\" />
-	  <Folder Include="Features\Library\Metadata\" />
-	  <Folder Include="Features\Library\Models\" />
-	  <Folder Include="Features\Library\Scanning\" />
-	  <Folder Include="Features\Library\Tabs\" />
-	  <Folder Include="Features\OsImageLauncher\" />
-	  <Folder Include="Features\Settings\About\" />
-	  <Folder Include="Features\Shell\Contracts\" />
-	  <Folder Include="Features\SmartAdder\Behaviors\" />
-	  <Folder Include="Features\SmartAdder\Converters\" />
-	  <Folder Include="Features\SmartAdder\Models\" />
-	  <Folder Include="Features\TransferQueue\Models\" />
-	  <Folder Include="Shared\Configuration\" />
-	  <Folder Include="Shared\Interop\" />
-	  <Folder Include="Shared\Messages\" />
-	  <Folder Include="Shared\Persistence\" />
-	  <Folder Include="Shared\Platform\" />
-	  <Folder Include="Shared\UI\Converters\" />
-	  <Folder Include="Shared\UI\Helpers\" />
-	</ItemGroup>
 </Project>

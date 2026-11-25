@@ -18,6 +18,7 @@ public static class ShellSliceExtensions
         services.TryAddSingleton<IRufusExecutableResolver, DefaultRufusExecutableResolver>();
         services.TryAddSingleton<IGameMetadataDownloader, NullGameMetadataDownloader>();
         services.AddSingleton<MainWindow>();
+        services.AddSingleton<ShellViewModel>();
         return services;
     }
 }
