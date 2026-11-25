@@ -23,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IIsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IIsoBootstrapperService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\IsoBootstrapperService.cs" Link="Linked\Features\OsImageLauncher\IsoBootstrapperService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageDetailsViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImageDetailsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImageSortOption.cs" Link="Linked\Features\OsImageLauncher\OsImageSortOption.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\OsImagesTabViewModel.cs" Link="Linked\Features\OsImageLauncher\OsImagesTabViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\OsImageLauncher\RufusResolutionHelper.cs" Link="Linked\Features\OsImageLauncher\RufusResolutionHelper.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Settings\About\AboutViewModel.cs" Link="Linked\Features\Settings\About\AboutViewModel.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Settings\ISettingsNavigationService.cs" Link="Linked\Features\Settings\ISettingsNavigationService.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Settings\IStartupService.cs" Link="Linked\Features\Settings\IStartupService.cs" />

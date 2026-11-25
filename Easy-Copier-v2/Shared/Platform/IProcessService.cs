@@ -22,5 +22,12 @@ public interface IProcessService
     /// </summary>
     /// <param name="driveLetter">The drive letter (e.g., "D:" or "D").</param>
     void OpenFormatDialog(string driveLetter);
+
+    /// <summary>
+    /// Launches an external executable with the specified command-line arguments.
+    /// </summary>
+    /// <param name="fileName">The path to the executable file.</param>
+    /// <param name="arguments">The command-line arguments to pass.</param>
+    void LaunchExecutable(string fileName, string arguments);
 }
 

@@ -100,5 +100,18 @@ public partial class ProcessService : IProcessService
                 break;
         }
     }
+
+    /// <inheritdoc />
+    public void LaunchExecutable(string fileName, string arguments)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+
+        _ = Process.Start(new ProcessStartInfo
+        {
+            FileName = fileName,
+            Arguments = arguments,
+            UseShellExecute = true
+        });
+    }
 }
 

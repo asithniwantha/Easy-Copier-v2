@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
 
 namespace EasyCopier.Features.Shell.Contracts;
 
@@ -26,6 +27,16 @@ public abstract partial class LibraryTabViewModelBase : ObservableRecipient, IDi
     /// Initializes a new instance of the <see cref="LibraryTabViewModelBase"/> class.
     /// </summary>
     protected LibraryTabViewModelBase(ILibrarySelectionCoordinator selectionCoordinator)
+    {
+        SelectionCoordinator = selectionCoordinator ?? throw new ArgumentNullException(nameof(selectionCoordinator));
+        SelectionCoordinator.ClearRequested += OnCoordinatorClearRequested;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LibraryTabViewModelBase"/> class using an explicit messenger instance.
+    /// </summary>
+    protected LibraryTabViewModelBase(ILibrarySelectionCoordinator selectionCoordinator, IMessenger messenger)
+        : base(messenger)
     {
         SelectionCoordinator = selectionCoordinator ?? throw new ArgumentNullException(nameof(selectionCoordinator));
         SelectionCoordinator.ClearRequested += OnCoordinatorClearRequested;

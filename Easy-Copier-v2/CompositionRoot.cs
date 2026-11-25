@@ -1,3 +1,4 @@
+using EasyCopier.Features.OsImageLauncher;
 using EasyCopier.Features.Settings;
 using EasyCopier.Features.Shell;
 using EasyCopier.Features.SmartAdder;
@@ -19,6 +20,7 @@ public static class CompositionRoot
         services.AddShellSlice();
         services.AddSmartAdderSlice();
         services.AddSettingsSlice();
+        services.AddOsImageLauncherSlice();
 
         return services.BuildServiceProvider();
     }
