@@ -20,7 +20,7 @@ dotnet_diagnostic.CA2227.severity = none
 dotnet_diagnostic.CA2007.severity = none
 
 # CA1031: Do not catch general exception types
-dotnet_diagnostic.CA1031.severity = none
+dotnet_diagnostic.CA1031.severity = warning
 
 # CA1003: Use generic event handler instances
 dotnet_diagnostic.CA1003.severity = none
@@ -32,5 +32,5 @@ dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA1873.severity = none
 
 # CA5392: Use DefaultDllImportSearchPaths attribute for P/Invokes (auto-generated code)
-dotnet_diagnostic.CA5392.severity = none
+dotnet_diagnostic.CA5392.severity = warning
 

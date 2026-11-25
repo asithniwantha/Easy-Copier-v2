@@ -128,6 +128,12 @@
 
 - **Headless CI Testability:** Keep calculations, FAT32/capacity validation, filtering, and SQLite repository logic free of WinUI/XAML types so `EasyCopier.Tests` runs headlessly via `dotnet test` in GitHub Actions.
 - **SQLite Testing:** Inject `ISqliteConnectionFactory` so tests run against in-memory SQLite databases rather than `%AppData%\EasyCopier\history.db`.
+- **Branch Per Task (Ask First):** Before making any code-changing task's first edit, ask the user whether to create a new GitHub branch for it. Do not edit files until the user answers.
+  - If the user agrees, propose a short descriptive name (`feature/<topic>`, `fix/<topic>`, `refactor/<topic>`, `chore/<topic>`), run `git switch -c <branch-name>` from an up-to-date `main`, and make all changes on that branch.
+  - If uncommitted changes exist on the current branch, tell the user before switching and ask whether to carry them over, stash them, or commit them first.
+  - Never commit or push directly to `main`. Push the branch (`git push -u origin <branch-name>`) only when the user asks.
+  - If the user declines, continue on the current branch (unless it is `main`, in which case confirm again).
+  - Read-only questions and explanations do not require a branch.
 - **Preserve Git History:** Always use `git mv` when relocating files during refactoring.
 - **Mandatory Verification Gate:** After any structural move or code change, run:
   ```powershell
