@@ -55,6 +55,7 @@ public static class SharedServiceExtensions
         services.TryAddSingleton<IAudioPlaybackService, AudioPlaybackService>();
         services.TryAddSingleton<IProcessService, ProcessService>();
         services.TryAddSingleton<IFileSystemService, FileSystemService>();
+        services.TryAddSingleton<ISourceFolderValidator, SourceFolderValidator>();
         services.TryAddSingleton<IClipboardService, ClipboardService>();
         services.TryAddSingleton<ITransferActivityMonitor, NullTransferActivityMonitor>();
         services.TryAddSingleton<ISystemTrayService, SystemTrayService>();

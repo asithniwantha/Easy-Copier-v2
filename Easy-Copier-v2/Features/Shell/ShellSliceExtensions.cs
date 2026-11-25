@@ -1,5 +1,6 @@
 using EasyCopier.Features.Shell.Contracts;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EasyCopier.Features.Shell;
 
@@ -10,8 +11,12 @@ public static class ShellSliceExtensions
 {
     public static IServiceCollection AddShellSlice(this IServiceCollection services)
     {
+        ArgumentNullException.ThrowIfNull(services);
+
         services.AddSingleton<ILibrarySelectionCoordinator, LibrarySelectionCoordinator>();
         services.AddSingleton<IFlyoutService, FlyoutService>();
+        services.TryAddSingleton<IRufusExecutableResolver, DefaultRufusExecutableResolver>();
+        services.TryAddSingleton<IGameMetadataDownloader, NullGameMetadataDownloader>();
         services.AddSingleton<MainWindow>();
         return services;
     }

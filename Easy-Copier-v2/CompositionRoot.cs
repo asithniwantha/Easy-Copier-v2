@@ -1,3 +1,4 @@
+using EasyCopier.Features.Settings;
 using EasyCopier.Features.Shell;
 using EasyCopier.Features.SmartAdder;
 using EasyCopier.Shared;
@@ -17,6 +18,7 @@ public static class CompositionRoot
         services.AddSharedFoundation();
         services.AddShellSlice();
         services.AddSmartAdderSlice();
+        services.AddSettingsSlice();
 
         return services.BuildServiceProvider();
     }

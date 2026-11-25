@@ -23,6 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\About\AboutViewModel.cs" Link="Linked\Features\Settings\About\AboutViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\ISettingsNavigationService.cs" Link="Linked\Features\Settings\ISettingsNavigationService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\IStartupService.cs" Link="Linked\Features\Settings\IStartupService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\IUpdateService.cs" Link="Linked\Features\Settings\IUpdateService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\SettingsViewModel.cs" Link="Linked\Features\Settings\SettingsViewModel.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Settings\SettingsViewModel.Persistence.cs" Link="Linked\Features\Settings\SettingsViewModel.Persistence.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\IGameMetadataDownloader.cs" Link="Linked\Features\Shell\Contracts\IGameMetadataDownloader.cs" />
+    <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\IRufusExecutableResolver.cs" Link="Linked\Features\Shell\Contracts\IRufusExecutableResolver.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\ILibrarySelectionCoordinator.cs" Link="Linked\Features\Shell\Contracts\ILibrarySelectionCoordinator.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\ISearchableTabViewModel.cs" Link="Linked\Features\Shell\Contracts\ISearchableTabViewModel.cs" />
     <Compile Include="..\Easy-Copier-v2\Features\Shell\Contracts\LibraryContractModels.cs" Link="Linked\Features\Shell\Contracts\LibraryContractModels.cs" />
@@ -48,9 +56,11 @@
     <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFileSystemService.cs" Link="Linked\Shared\Platform\IFileSystemService.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Platform\IFolderPickerService.cs" Link="Linked\Shared\Platform\IFolderPickerService.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Platform\IProcessService.cs" Link="Linked\Shared\Platform\IProcessService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\ISourceFolderValidator.cs" Link="Linked\Shared\Platform\ISourceFolderValidator.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Platform\ITransferActivityMonitor.cs" Link="Linked\Shared\Platform\ITransferActivityMonitor.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Platform\IWindowService.cs" Link="Linked\Shared\Platform\IWindowService.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\Platform\FileSystemService.cs" Link="Linked\Shared\Platform\FileSystemService.cs" />
+    <Compile Include="..\Easy-Copier-v2\Shared\Platform\SourceFolderValidator.cs" Link="Linked\Shared\Platform\SourceFolderValidator.cs" />
     <Compile Include="..\Easy-Copier-v2\Shared\UI\Helpers\*.cs" Link="Linked\Shared\UI\Helpers\%(Filename)%(Extension)" />
   </ItemGroup>
 
