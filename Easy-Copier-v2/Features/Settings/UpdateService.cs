@@ -25,7 +25,7 @@ public sealed partial class UpdateService : IUpdateService
 
         try
         {
-            GithubSource source = new("https://github.com/asithniwantha/Easy-Copier", null, false);
+            GithubSource source = new("https://github.com/asithniwantha/Easy-Copier-v2", null, false);
             _updateManager = new UpdateManager(source);
         }
         catch (Exception ex)
