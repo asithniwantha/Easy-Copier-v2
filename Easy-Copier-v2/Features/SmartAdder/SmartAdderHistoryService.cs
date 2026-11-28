@@ -50,7 +50,7 @@ public sealed class SmartAdderHistoryService : ISmartAdderHistoryService
             _ = await command.ExecuteNonQueryAsync();
             _logger.LogInformation("SmartAdderHistory table initialized at {Path}", _connectionFactory.DatabasePath);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to initialize SmartAdderHistory table at {Path}", _connectionFactory.DatabasePath);
         }
@@ -77,7 +77,7 @@ public sealed class SmartAdderHistoryService : ISmartAdderHistoryService
 
             _ = await command.ExecuteNonQueryAsync();
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to add SmartAdder history record with total {Total}", record.Total);
         }
@@ -124,7 +124,7 @@ public sealed class SmartAdderHistoryService : ISmartAdderHistoryService
                 });
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to get recent SmartAdder history records");
         }

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.UI;
 using Microsoft.UI.Input;
 using Microsoft.UI.Xaml;
@@ -163,7 +164,7 @@ public sealed partial class LibraryCardControl : UserControl
         {
             // Pointer left before preview initialization completed
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is COMException or UriFormatException or IOException or UnauthorizedAccessException or InvalidOperationException or ArgumentException)
         {
             System.Diagnostics.Debug.WriteLine($"Hover video preview failed: {ex.Message}");
         }

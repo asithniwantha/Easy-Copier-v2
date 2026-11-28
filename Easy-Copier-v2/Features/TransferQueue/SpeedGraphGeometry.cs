@@ -11,6 +11,8 @@ public static class SpeedGraphGeometry
     /// <summary>Gets the upper bound of the Y axis (MB/s) for the given samples.</summary>
     public static double GetScaleMax(IReadOnlyList<double> samples)
     {
+        ArgumentNullException.ThrowIfNull(samples);
+
         double max = 0;
 
         for (int i = 0; i < samples.Count; i++)
@@ -32,6 +34,8 @@ public static class SpeedGraphGeometry
         int capacity,
         double scaleMax)
     {
+        ArgumentNullException.ThrowIfNull(samples);
+
         if (samples.Count == 0 || width <= 0 || height <= 0 || capacity < 2 || scaleMax <= 0)
         {
             return [];

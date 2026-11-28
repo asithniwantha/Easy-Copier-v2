@@ -1,3 +1,4 @@
+using System.Security;
 using System.Text.Json;
 using EasyCopier.Features.Shell.Contracts;
 using Microsoft.Extensions.Logging;
@@ -73,7 +74,8 @@ public sealed partial class GameInfoDownloadService
             categories = categories.Distinct().ToList();
             await File.WriteAllLinesAsync(catFile, categories.Select(c => c.ToString()), cancellationToken).ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or KeyNotFoundException or ArgumentException or SecurityException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "Failed to download categories for {GameName}", gameName);
         }
@@ -117,7 +119,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or KeyNotFoundException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "Steam Categories fetch failed for appId {AppId}", appId);
         }

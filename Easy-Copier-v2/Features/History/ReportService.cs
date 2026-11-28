@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security;
 using System.Text;
 using EasyCopier.Features.History.Models;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ public class ReportService(ILogger<ReportService> logger) : IReportService
             _logger.LogInformation("Successfully exported history to {FilePath}", filePath);
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or SecurityException)
         {
             _logger.LogError(ex, "Failed to export history to CSV at {FilePath}", filePath);
             return false;

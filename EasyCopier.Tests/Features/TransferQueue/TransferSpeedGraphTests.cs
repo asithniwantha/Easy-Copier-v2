@@ -24,6 +24,13 @@ public sealed class TransferSpeedGraphTests
     }
 
     [Fact]
+    public void SpeedGraphGeometry_ThrowsOnNullSamples()
+    {
+        Assert.Throws<ArgumentNullException>(() => SpeedGraphGeometry.GetScaleMax(null!));
+        Assert.Throws<ArgumentNullException>(() => SpeedGraphGeometry.BuildPoints(null!, 100, 50, 10, 1));
+    }
+
+    [Fact]
     public void SlidingWindow_ReturnsZeroWhenNoTimeElapsed()
     {
         SlidingWindowSpeedCalculator calculator = new();

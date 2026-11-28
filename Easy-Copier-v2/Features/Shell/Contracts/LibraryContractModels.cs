@@ -1,3 +1,4 @@
+using System.Security;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EasyCopier.Shared.UI.Helpers;
 
@@ -100,7 +101,7 @@ public partial class FileSystemItem : ObservableObject
                 long size = new FileInfo(path).Length;
                 SizeFormatted = FormattingHelpers.FormatBytes(size);
             }
-            catch
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or SecurityException)
             {
                 SizeFormatted = "Unknown";
             }

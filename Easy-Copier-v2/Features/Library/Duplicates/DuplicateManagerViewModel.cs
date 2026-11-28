@@ -1,5 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EasyCopier.Features.Library.Models;
@@ -243,7 +246,7 @@ public sealed partial class DuplicateManagerViewModel : CloseableViewModelBase, 
         {
             StatusMessage = "Duplicate scan canceled.";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Failed to scan for duplicate library entries.");
             StatusMessage = "An error occurred during duplicate scanning.";
@@ -383,7 +386,7 @@ public sealed partial class DuplicateManagerViewModel : CloseableViewModelBase, 
                     FormattingHelpers.FormatBytes(result.RecoveredBytes));
             });
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or COMException or InvalidOperationException or OperationCanceledException)
         {
             _logger.LogError(ex, "Failed to complete batch Recycle Bin deletion.");
             StatusMessage = "An error occurred during cleanup.";

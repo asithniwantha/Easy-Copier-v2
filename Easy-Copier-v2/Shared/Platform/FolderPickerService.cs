@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.UI;
@@ -28,6 +29,7 @@ public class FolderPickerService : IFolderPickerService
     }
 
     /// <inheritdoc />
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Forwards dispatcher callback exceptions to the caller via TaskCompletionSource.SetException instead of crashing the UI dispatcher.")]
     public async Task<string?> PickFolderAsync(string? startingDirectory = null)
     {
         TaskCompletionSource<string?> tcs = new();

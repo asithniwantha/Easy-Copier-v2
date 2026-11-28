@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Security;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -130,7 +132,7 @@ public sealed partial class OsImagesTabViewModel
         {
             // Scan cancelled; keep existing entries intact.
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Failed to scan OS image source folders.");
         }
@@ -260,7 +262,7 @@ public sealed partial class OsImagesTabViewModel
                         LibraryCategory.OsImage));
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
             {
                 _logger.LogWarning(ex, "Error scanning OS image folder: {Path}", sourceFolder);
             }

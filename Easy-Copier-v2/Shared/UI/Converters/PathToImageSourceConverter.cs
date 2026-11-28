@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Media.Imaging;
 
@@ -24,7 +25,7 @@ public class PathToImageSourceConverter : IValueConverter
                     };
                 }
             }
-            catch
+            catch (Exception ex) when (ex is COMException or IOException or UnauthorizedAccessException or UriFormatException or ArgumentException or NotSupportedException)
             {
                 // Malformed path/URI - fall through and return null so no image is shown.
             }

@@ -118,7 +118,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "CheapShark cover failed for {GameName}", gameName);
         }
@@ -196,7 +197,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "GOG cover failed for {GameName}", gameName);
         }
@@ -245,7 +247,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "GSR cover failed for {GameName}", gameName);
         }
@@ -347,7 +350,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "Wikipedia cover failed for {GameName}", gameName);
         }
@@ -402,7 +406,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "PCGW cover failed for {GameName}", gameName);
         }
@@ -479,7 +484,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "OpenCritic cover failed for {GameName}", gameName);
         }
@@ -532,7 +538,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogDebug(ex, "Lutris API cover failed for {GameName}, attempting web scrape fallback", gameName);
         }
@@ -557,7 +564,8 @@ public sealed partial class GameInfoDownloadService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException or UriFormatException or RegexMatchTimeoutException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "Lutris web cover failed for {GameName}", gameName);
         }

@@ -209,7 +209,8 @@ public sealed partial class GameInfoDownloadService
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException
+                || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
             {
                 _logger.LogDebug(ex, "Steam Community SearchApps failed for candidate: {Candidate}", candidate);
             }
@@ -253,7 +254,8 @@ public sealed partial class GameInfoDownloadService
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException
+                || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
             {
                 _logger.LogDebug(ex, "Steam Store search failed for candidate: {Candidate}", candidate);
             }
@@ -297,7 +299,8 @@ public sealed partial class GameInfoDownloadService
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is HttpRequestException or JsonException or InvalidOperationException or KeyNotFoundException or FormatException
+                || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
             {
                 _logger.LogDebug(ex, "CheapShark AppId lookup failed for candidate: {Candidate}", candidate);
             }

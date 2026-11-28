@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using EasyCopier.Features.Library.Models;
 using EasyCopier.Shared.Interop;
@@ -21,6 +22,7 @@ public class SafeDeletionService : ISafeDeletionService
     }
 
     /// <inheritdoc />
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "STA background thread boundary converts any unexpected exception into a failed result instead of terminating the thread and leaving the TaskCompletionSource unresolved.")]
     public Task<bool> DeleteToRecycleBinAsync(string targetPath, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(targetPath))
@@ -59,6 +61,7 @@ public class SafeDeletionService : ISafeDeletionService
     }
 
     /// <inheritdoc />
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "STA background thread boundary captures any unexpected exception into the TaskCompletionSource instead of terminating the thread.")]
     public Task<SafeDeletionResult> BatchDeleteToRecycleBinAsync(
         IReadOnlyList<(string Path, long Bytes)> targets,
         IProgress<double>? progress = null,
@@ -101,7 +104,7 @@ public class SafeDeletionService : ISafeDeletionService
                             errors.Add($"Failed to recycle '{path}': target could not be parsed or deleted by shell.");
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is COMException or IOException or UnauthorizedAccessException or InvalidOperationException or InvalidCastException or ArgumentException)
                     {
                         failed++;
                         errors.Add($"Error recycling '{path}': {ex.Message}");

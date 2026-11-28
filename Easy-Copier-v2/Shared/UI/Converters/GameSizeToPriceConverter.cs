@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using EasyCopier.Shared.Configuration;
 using EasyCopier.Shared.UI.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +32,7 @@ public class GameSizeToPriceConverter : IValueConverter
 
                 return $"Rs. {FormattingHelpers.CalculatePrice(bytes, settings)}";
             }
-            catch
+            catch (Exception ex) when (ex is InvalidOperationException or COMException or IOException or UnauthorizedAccessException or JsonException)
             {
                 return gb <= 5.0 ? "Rs. 100" : gb <= 10.0 ? "Rs. 200" : gb < 16.0 ? "Rs. 300" : "Rs. 400";
             }

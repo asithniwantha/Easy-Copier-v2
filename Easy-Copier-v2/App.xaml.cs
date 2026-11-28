@@ -1,4 +1,6 @@
-﻿using EasyCopier.Features.History;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using EasyCopier.Features.History;
 using EasyCopier.Features.Shell;
 using EasyCopier.Features.Shell.Contracts;
 using EasyCopier.Features.SmartAdder;
@@ -81,6 +83,7 @@ public partial class App : Application
     }
 
     /// <summary>Invoked when the application is launched.</summary>
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Top-level async void OnLaunched startup boundary logs fatal errors instead of letting them escape and crash the process.")]
     protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         ILogger<App>? logger = null;
@@ -98,7 +101,7 @@ public partial class App : Application
                     AppNotificationManager.Default.Register();
                     _notificationsRegistered = true;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or PlatformNotSupportedException or IOException)
                 {
                     logger.LogWarning(ex, "Failed to register AppNotificationManager during startup.");
                 }

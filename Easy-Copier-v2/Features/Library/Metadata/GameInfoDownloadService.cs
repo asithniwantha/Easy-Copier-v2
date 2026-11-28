@@ -1,4 +1,6 @@
 using System.Net;
+using System.Security;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using EasyCopier.Features.Library.Scanning;
 using EasyCopier.Features.Shell.Contracts;
@@ -92,7 +94,7 @@ public sealed partial class GameInfoDownloadService : IGameInfoDownloadService, 
                                 cancellationToken).ConfigureAwait(false);
                             foldersToProcess.AddRange(collectionSubdirectories);
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
                         {
                             _logger.LogWarning(ex, "Error reading collection folder: {Path}", subdir);
                         }
@@ -118,7 +120,8 @@ public sealed partial class GameInfoDownloadService : IGameInfoDownloadService, 
                     idx++;
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException or HttpRequestException or JsonException
+                || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
             {
                 _logger.LogError(ex, "Error processing source folder: {Path}", sourceFolder);
                 progress?.Report($"Error processing: {sourceFolder}");
@@ -175,7 +178,8 @@ public sealed partial class GameInfoDownloadService : IGameInfoDownloadService, 
                 await Task.Delay(300, cancellationToken).ConfigureAwait(false);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or KeyNotFoundException or UriFormatException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "Failed to download requirements for {GameName}", gameName);
         }
@@ -196,7 +200,7 @@ public sealed partial class GameInfoDownloadService : IGameInfoDownloadService, 
             {
                 File.Delete(coverPath);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
                 _logger.LogDebug(ex, "Failed to delete old/corrupted cover at {Path}", coverPath);
             }
@@ -233,7 +237,8 @@ public sealed partial class GameInfoDownloadService : IGameInfoDownloadService, 
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or KeyNotFoundException or UriFormatException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "Failed to download cover for {GameName}", gameName);
         }
@@ -268,7 +273,8 @@ public sealed partial class GameInfoDownloadService : IGameInfoDownloadService, 
                 return true;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or IOException or UnauthorizedAccessException or UriFormatException or ArgumentException
+            || (ex is TaskCanceledException && !cancellationToken.IsCancellationRequested))
         {
             _logger.LogWarning(ex, "DownloadImage failed for {Url}", url);
         }

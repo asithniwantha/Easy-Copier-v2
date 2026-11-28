@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Text.Json;
 using EasyCopier.Features.Shell.Contracts;
 using EasyCopier.Shared.Configuration;
 using EasyCopier.Shared.Platform;
@@ -73,7 +75,7 @@ public sealed class IsoBootstrapperService : IIsoBootstrapperService
             _logger.LogInformation("Successfully launched Rufus ({RufusPath}) with ISO: {IsoPath}", latestRufusPath, isoPath);
             return (true, $"Opened {Path.GetFileName(isoPath)} in Rufus.");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or Win32Exception or InvalidOperationException or ArgumentException)
         {
             _logger.LogError(ex, "Failed to launch Rufus for ISO path: {IsoPath}", isoPath);
             return (false, $"Error opening Rufus: {ex.Message}");

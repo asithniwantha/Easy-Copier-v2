@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EasyCopier.Features.SmartAdder.Models;
 using EasyCopier.Shared.Platform;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 
 namespace EasyCopier.Features.SmartAdder;
@@ -185,7 +186,7 @@ public sealed partial class SmartAdderViewModel : ObservableObject
                 await _smartAdderHistoryService.AddRecordAsync(record);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or JsonException or NotSupportedException or InvalidOperationException)
         {
             _logger.LogError(ex, "Failed to log SmartAdder history before clearing.");
         }

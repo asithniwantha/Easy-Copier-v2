@@ -1,4 +1,7 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -8,6 +11,7 @@ using EasyCopier.Shared.Messages;
 using EasyCopier.Shared.Models;
 using EasyCopier.Shared.Platform;
 using Microsoft.Extensions.Logging;
+using Velopack.Exceptions;
 
 namespace EasyCopier.Features.Settings;
 
@@ -203,7 +207,7 @@ public sealed partial class SettingsViewModel : ObservableObject, ICloseableView
                 _logger.LogWarning("Logs folder not found.");
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or Win32Exception or InvalidOperationException or ArgumentException)
         {
             _logger.LogError(ex, "Failed to open logs folder.");
         }
@@ -271,7 +275,7 @@ public sealed partial class SettingsViewModel : ObservableObject, ICloseableView
                     "OK");
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or InvalidOperationException or COMException or NotInstalledException or ChecksumFailedException)
         {
             _logger.LogError(ex, "Error during manual update check");
             StatusMessage = "Failed to check for updates.";
@@ -314,7 +318,7 @@ public sealed partial class SettingsViewModel : ObservableObject, ICloseableView
         {
             StatusMessage = "Game info download canceled.";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or ArgumentException)
         {
             StatusMessage = $"Error downloading game info: {ex.Message}";
         }
@@ -434,7 +438,7 @@ public sealed partial class SettingsViewModel : ObservableObject, ICloseableView
             _processService.OpenInExplorer(folderPath);
             StatusMessage = $"Opened data folder: {folderPath}";
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or IOException or UnauthorizedAccessException or ArgumentException)
         {
             StatusMessage = $"Unable to open data folder: {ex.Message}";
         }

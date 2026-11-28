@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Security;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EasyCopier.Features.Shell.Contracts;
 using EasyCopier.Shared.Platform;
@@ -71,7 +72,7 @@ public partial class GameDetailsViewModel : ObservableObject
                 IsFolderStatusVisible = true;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
         {
             FolderStatusMessage = $"Error loading folder: {ex.Message}";
             IsFolderStatusVisible = true;
@@ -97,7 +98,7 @@ public partial class GameDetailsViewModel : ObservableObject
                     item.SizeFormatted = FormattingHelpers.FormatBytes(size);
                 });
             }
-            catch
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
             {
                 _ = _dispatcherService.TryEnqueue(() =>
                 {

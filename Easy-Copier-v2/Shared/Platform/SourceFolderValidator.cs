@@ -1,3 +1,4 @@
+using System.Security;
 using EasyCopier.Shared.Models;
 using Microsoft.Extensions.Logging;
 
@@ -38,7 +39,7 @@ public sealed class SourceFolderValidator : ISourceFolderValidator
 
                 return folder;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException or NotSupportedException)
             {
                 _logger.LogError(ex, "Error validating source folder: {Path}", path);
                 return new SourceFolder(path, false, DateTime.Now);

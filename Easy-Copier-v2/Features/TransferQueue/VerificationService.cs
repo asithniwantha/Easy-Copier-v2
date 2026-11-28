@@ -1,4 +1,5 @@
 using System.IO.Hashing;
+using System.Security;
 using System.Security.Cryptography;
 using EasyCopier.Features.TransferQueue.Models;
 using EasyCopier.Shared.Configuration;
@@ -60,7 +61,7 @@ public sealed class VerificationService : IVerificationService
             _logger.LogInformation("Verification cancelled by user for {Dest}", destinationPath);
             return new VerificationResult(false, "Verification was cancelled by user.");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or SecurityException or CryptographicException)
         {
             _logger.LogError(ex, "Unexpected error during verification between {Source} and {Dest}", sourcePath, destinationPath);
             return new VerificationResult(false, $"Verification error: {ex.Message}");

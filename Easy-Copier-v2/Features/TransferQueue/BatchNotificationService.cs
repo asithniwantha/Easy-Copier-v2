@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using EasyCopier.Features.TransferQueue.Models;
 using EasyCopier.Shared.Configuration;
 using EasyCopier.Shared.Platform;
@@ -137,7 +138,7 @@ public sealed class BatchNotificationService : IBatchNotificationService
                 _logger.LogWarning("AppNotificationManager.Default.Show returned notification ID 0.");
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or PlatformNotSupportedException or ArgumentException)
         {
             _logger.LogError(ex, "Failed to show desktop notification.");
         }

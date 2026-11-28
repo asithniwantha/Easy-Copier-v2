@@ -341,7 +341,7 @@ public partial class HistoryViewModel
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is JsonException or NotSupportedException)
             {
                 _logger?.LogWarning(ex, "Failed to deserialize sub-files JSON for history record ID {RecordId}", value.Id);
             }
