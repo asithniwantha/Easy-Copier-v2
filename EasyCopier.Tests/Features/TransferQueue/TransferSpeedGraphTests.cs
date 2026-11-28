@@ -63,7 +63,7 @@ public sealed class TransferSpeedGraphTests
     [Fact]
     public void QueueItem_RecordSpeedUpdatesCurrentSamplesAndPeak()
     {
-        TransferQueueItem item = new([], new RemovableDrive(@"E:\", "USB", "NTFS", 0, 0, 0), @"E:\", 0);
+        using TransferQueueItem item = new([], new RemovableDrive(@"E:\", "USB", "NTFS", 0, 0, 0), @"E:\", 0);
 
         item.RecordSpeed(50 * OneMegabyte);
 
