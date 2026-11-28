@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Management;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.Messaging;
 using EasyCopier.Features.TransferQueue.Models;
 using EasyCopier.Shared.Messages;
@@ -95,13 +96,13 @@ public sealed class DriveDiscoveryService : IDriveDiscoveryService
                             drive.Name, drive.VolumeLabel, drive.DriveFormat, brand,
                             drive.AvailableFreeSpace, drive.TotalSize);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ManagementException or COMException or InvalidOperationException)
                     {
                         _logger.LogWarning(ex, "Error reading drive: {Name}", drive.Name);
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or PlatformNotSupportedException or ManagementException or COMException)
             {
                 _logger.LogError(ex, "Error enumerating drives");
             }
@@ -175,7 +176,7 @@ public sealed class DriveDiscoveryService : IDriveDiscoveryService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ManagementException or COMException or UnauthorizedAccessException or PlatformNotSupportedException or InvalidOperationException)
         {
             _logger.LogWarning(ex, "Error querying physical disk info for {Letter}", driveLetterWithColon);
         }
@@ -205,7 +206,7 @@ public sealed class DriveDiscoveryService : IDriveDiscoveryService
                 return busType == UsbBusType;
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ManagementException or COMException or UnauthorizedAccessException or PlatformNotSupportedException or FormatException or InvalidCastException or OverflowException)
         {
             _logger.LogWarning(ex, "Error querying MSFT_PhysicalDisk BusType for disk index {Index}", diskIndex);
         }
@@ -233,7 +234,7 @@ public sealed class DriveDiscoveryService : IDriveDiscoveryService
 
                 _logger.LogInformation("Drive watcher started");
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is ManagementException or COMException or UnauthorizedAccessException or PlatformNotSupportedException or InvalidOperationException)
             {
                 _logger.LogError(ex, "Failed to start drive watcher");
             }
@@ -262,7 +263,7 @@ public sealed class DriveDiscoveryService : IDriveDiscoveryService
         {
             watcherToDispose.Stop();
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ManagementException or COMException or InvalidOperationException or UnauthorizedAccessException)
         {
             _logger.LogError(ex, "Error stopping drive watcher");
         }

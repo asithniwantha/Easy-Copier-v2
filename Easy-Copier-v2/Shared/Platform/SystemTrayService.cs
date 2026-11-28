@@ -65,7 +65,7 @@ public sealed class SystemTrayService : ISystemTrayService
 
             _logger.LogInformation("SystemTrayService initialized successfully for HWND 0x{Hwnd:X8}.", _hWnd.ToInt64());
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException or InvalidOperationException or ArgumentException)
         {
             _logger.LogError(ex, "Failed to initialize SystemTrayService.");
         }
@@ -104,7 +104,7 @@ public sealed class SystemTrayService : ISystemTrayService
                 _ = SystemTrayInterop.Shell_NotifyIcon(SystemTrayInterop.NIM_MODIFY, ref nid);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException or InvalidOperationException or ArgumentException)
         {
             _logger.LogError(ex, "Error occurred while displaying system tray icon.");
         }
@@ -124,7 +124,7 @@ public sealed class SystemTrayService : ISystemTrayService
             _ = SystemTrayInterop.Shell_NotifyIcon(SystemTrayInterop.NIM_DELETE, ref nid);
             IsTrayIconVisible = false;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException or InvalidOperationException or ArgumentException)
         {
             _logger.LogError(ex, "Error removing system tray icon.");
         }
@@ -153,7 +153,7 @@ public sealed class SystemTrayService : ISystemTrayService
 
             _ = SystemTrayInterop.Shell_NotifyIcon(SystemTrayInterop.NIM_MODIFY, ref nid);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException or InvalidOperationException or ArgumentException)
         {
             _logger.LogError(ex, "Error displaying tray balloon notification.");
         }

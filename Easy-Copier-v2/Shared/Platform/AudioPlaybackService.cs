@@ -1,4 +1,5 @@
 using System.Media;
+using System.Security;
 using Microsoft.Extensions.Logging;
 
 namespace EasyCopier.Shared.Platform;
@@ -47,7 +48,7 @@ public class AudioPlaybackService : IAudioPlaybackService
                         using SoundPlayer player = new(fullPath);
                         player.PlaySync();
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException or TimeoutException or PlatformNotSupportedException or UriFormatException)
                     {
                         _logger.LogError(ex, "Failed to play sound: {Path}", fullPath);
                     }
@@ -58,7 +59,7 @@ public class AudioPlaybackService : IAudioPlaybackService
                 _logger.LogWarning("Sound file not found: {Path}", fullPath);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Error initiating sound playback for {Path}", relativePath);
         }

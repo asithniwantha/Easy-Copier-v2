@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Security;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -203,7 +205,7 @@ public sealed partial class LibraryCatalogService
         {
             _logger.LogInformation("Library initialization was cancelled.");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Error during library initialization.");
             _ = _dispatcherService.TryEnqueue(() => StatusMessage = $"Library load error: {ex.Message}");
@@ -283,7 +285,7 @@ public sealed partial class LibraryCatalogService
         {
             _ = _dispatcherService.TryEnqueue(() => StatusMessage = "Scan cancelled");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Error during library scan.");
             _ = _dispatcherService.TryEnqueue(() => StatusMessage = $"Scan error: {ex.Message}");
@@ -351,7 +353,7 @@ public sealed partial class LibraryCatalogService
         {
             _logger.LogInformation("Library cache validation was cancelled.");
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or ArgumentException or SecurityException)
         {
             _logger.LogWarning(ex, "Error validating library cache.");
             _ = _dispatcherService.TryEnqueue(() => StatusMessage = $"Validation error: {ex.Message}");

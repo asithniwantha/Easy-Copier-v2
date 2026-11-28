@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Management;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -177,7 +179,7 @@ public sealed partial class TransferQueueViewModel
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ManagementException or COMException or InvalidOperationException)
         {
             _logger.LogWarning(ex, "Error refreshing removable drives.");
             StatusMessage = $"Error refreshing drives: {ex.Message}";
@@ -264,7 +266,7 @@ public sealed partial class TransferQueueViewModel
                 StatusMessage = "No items to queue (all skipped).";
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or COMException or InvalidOperationException or OperationCanceledException or ArgumentException)
         {
             _logger.LogError(ex, "Queue error while enqueuing transfer entries.");
             StatusMessage = $"Queue error: {ex.Message}";

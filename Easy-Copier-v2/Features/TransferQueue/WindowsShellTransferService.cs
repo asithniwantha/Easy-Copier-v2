@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text.Json;
 using EasyCopier.Features.Shell.Contracts;
 using EasyCopier.Features.TransferQueue.Models;
@@ -70,7 +72,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
                     return (size, count);
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
             {
                 _logger.LogWarning(ex, "Failed to calculate stats for {Path}", path);
             }
@@ -80,6 +82,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
     }
 
     /// <inheritdoc />
+    [SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "STA background thread boundary converts any unexpected exception into a failed TransferOutcome so the thread does not crash and the TaskCompletionSource always completes.")]
     public Task<TransferOutcome> TransferGamesAsync(
         TransferRequest request,
         IProgress<TransferProgress>? progress = null,
@@ -255,7 +258,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
                             StatusText: result ? "Completed" : "Failed",
                             Timestamp: DateTime.Now));
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is COMException or IOException or UnauthorizedAccessException or InvalidOperationException or InvalidCastException or ArgumentException or JsonException or OperationCanceledException)
                     {
                         itemStopwatch.Stop();
                         string errorMsg = ex.Message;
@@ -346,7 +349,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
                 return JsonSerializer.Serialize(files);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or JsonException or NotSupportedException)
         {
             _logger.LogWarning(ex, "Failed to scan source directory for sub-files: {Path}", sourcePath);
         }
@@ -387,7 +390,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
 
             return true;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or SecurityException)
         {
             _logger.LogError(ex, "Merge operation failed for {Source}", sourceDir);
             return false;
@@ -422,7 +425,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
             _ = fileOp.DeleteItem(targetItem, null);
             _ = fileOp.PerformOperations();
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or InvalidCastException or IOException or UnauthorizedAccessException or ArgumentException)
         {
             _logger.LogWarning(ex, "Failed to delete existing destination for replacement: {Dest}", targetPath);
         }
@@ -490,7 +493,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
 
             return !(aborted || hr == COPYENGINE_E_USER_CANCELLED || isFailed);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or InvalidCastException or IOException or UnauthorizedAccessException or ArgumentException)
         {
             _logger.LogError(ex, "COM copy operation failed for {Source}", sourcePath);
             return false;
@@ -524,6 +527,7 @@ public sealed partial class WindowsShellTransferService : IFileTransferService
         public const uint COINIT_APARTMENTTHREADED = 0x2;
 
         [LibraryImport("ole32.dll")]
+        [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
         public static partial int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
     }
 }

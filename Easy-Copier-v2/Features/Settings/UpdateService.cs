@@ -1,6 +1,9 @@
+using System.ComponentModel;
 using System.Reflection;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Velopack;
+using Velopack.Exceptions;
 using Velopack.Sources;
 
 namespace EasyCopier.Features.Settings;
@@ -28,7 +31,7 @@ public sealed partial class UpdateService : IUpdateService
             GithubSource source = new("https://github.com/asithniwantha/Easy-Copier-v2", null, false);
             _updateManager = new UpdateManager(source);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException or UriFormatException or NotSupportedException or NotInstalledException or AcquireLockFailedException)
         {
             LogUpdateManagerInitializationFailed(logger, ex);
         }
@@ -67,7 +70,7 @@ public sealed partial class UpdateService : IUpdateService
             LogNoUpdateAvailable(_logger, currentVersion);
             return false;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is NotInstalledException or AcquireLockFailedException or HttpRequestException or TaskCanceledException or JsonException or IOException or InvalidOperationException)
         {
             LogCheckForUpdatesError(_logger, ex);
             return false;
@@ -91,7 +94,7 @@ public sealed partial class UpdateService : IUpdateService
             await _updateManager.DownloadUpdatesAsync(_updateInfo);
             LogDownloadSuccess(_logger, targetVersion);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is NotInstalledException or ChecksumFailedException or AcquireLockFailedException or HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or InvalidOperationException)
         {
             LogDownloadError(_logger, ex, targetVersion);
         }
@@ -112,7 +115,7 @@ public sealed partial class UpdateService : IUpdateService
             LogApplyUpdateStart(_logger, targetVersion);
             _updateManager.ApplyUpdatesAndRestart(_updateInfo);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is NotInstalledException or AcquireLockFailedException or Win32Exception or IOException or UnauthorizedAccessException or InvalidOperationException)
         {
             LogApplyUpdateError(_logger, ex, targetVersion);
         }

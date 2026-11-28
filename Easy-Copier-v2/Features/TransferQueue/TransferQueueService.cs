@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Threading.Channels;
 using CommunityToolkit.Mvvm.Messaging;
 using EasyCopier.Features.TransferQueue.Models;
@@ -210,7 +211,7 @@ public sealed class TransferQueueService : ITransferQueueService, IDisposable
             TransferRequest request = new(item.Items, item.TargetDrive, item.DestinationPath);
             outcome = await _fileTransferService.TransferGamesAsync(request, progress, item.CancellationToken);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is OperationCanceledException or IOException or UnauthorizedAccessException or COMException or InvalidOperationException or PlatformNotSupportedException)
         {
             _logger.LogError(ex, "Queue item transfer failed for {Drive}", item.TargetDrive.DriveLetter);
         }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace EasyCopier.Shared.Platform;
@@ -19,7 +20,7 @@ public class ClipboardService : IClipboardService
             package.SetText(text);
             Clipboard.SetContent(package);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is COMException or UnauthorizedAccessException or InvalidOperationException)
         {
             Debug.WriteLine($"Failed to set clipboard content: {ex.Message}");
         }

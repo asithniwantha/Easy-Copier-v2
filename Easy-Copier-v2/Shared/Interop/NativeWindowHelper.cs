@@ -95,7 +95,7 @@ public static partial class NativeWindowHelper
 
             return GetActiveWindow();
         }
-        catch (Exception)
+        catch (Exception ex) when (ex is ExternalException or InvalidOperationException or NotSupportedException or TypeLoadException)
         {
             return IntPtr.Zero;
         }

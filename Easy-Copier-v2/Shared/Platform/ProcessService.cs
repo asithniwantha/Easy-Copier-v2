@@ -1,5 +1,7 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Principal;
 using Microsoft.Extensions.Logging;
 
@@ -42,7 +44,7 @@ public partial class ProcessService : IProcessService
                 UseShellExecute = true
             });
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is Win32Exception or InvalidOperationException or ObjectDisposedException or PlatformNotSupportedException or IOException)
         {
             _logger?.LogWarning(ex, "Failed to launch Windows Explorer for path: {Path}", path);
             Trace.TraceWarning("Failed to launch Windows Explorer for path '{0}': {1}", path, ex);
@@ -58,7 +60,7 @@ public partial class ProcessService : IProcessService
             WindowsPrincipal principal = new(identity);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or InvalidOperationException or PlatformNotSupportedException)
         {
             _logger?.LogWarning(ex, "Failed to determine administrator execution role.");
             return false;

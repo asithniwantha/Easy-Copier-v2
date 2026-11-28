@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -16,6 +17,7 @@ using EasyCopier.Shared.Models;
 using EasyCopier.Shared.Platform;
 using EasyCopier.Shared.UI.Helpers;
 using Microsoft.Extensions.Logging;
+using Velopack.Exceptions;
 
 namespace EasyCopier.Features.Shell;
 
@@ -415,7 +417,7 @@ public sealed partial class ShellViewModel
                 }
             });
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or InvalidOperationException or Win32Exception or ChecksumFailedException or NotInstalledException)
         {
             _logger.LogWarning(ex, "Error downloading application update manually.");
             _ = _dispatcherService.TryEnqueue(() =>
@@ -543,7 +545,7 @@ public sealed partial class ShellViewModel
                 });
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or IOException or UnauthorizedAccessException or JsonException or InvalidOperationException or NotInstalledException or ChecksumFailedException)
         {
             _logger.LogWarning(ex, "Error checking for application updates in background.");
         }

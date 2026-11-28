@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Security;
 using EasyCopier.Features.Shell.Contracts;
 using Microsoft.Extensions.Logging;
 
@@ -43,7 +44,7 @@ public class GameScannerService : IGameScannerService
             DirectoryInfo dirInfo = new(folderPath);
             return dirInfo.Exists && (dirInfo.Attributes & FileAttributes.System) == FileAttributes.System;
         }
-        catch
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException or NotSupportedException)
         {
             return true;
         }
@@ -150,7 +151,7 @@ public class GameScannerService : IGameScannerService
                             _ = processedPaths.Add(file);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
                     {
                         _logger.LogWarning(ex, "Error scanning root files in {Path}", sourceFolder);
                     }
@@ -209,7 +210,7 @@ public class GameScannerService : IGameScannerService
                         {
                             _logger.LogWarning(ex, "Access denied to {Category} folder: {Path}", categoryLabel, itemFolder);
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ex is IOException or ArgumentException or SecurityException)
                         {
                             _logger.LogError(ex, "Error scanning {Category} folder: {Path}", categoryLabel, itemFolder);
                         }
@@ -221,7 +222,7 @@ public class GameScannerService : IGameScannerService
                 _logger.LogWarning(ex, "Access denied to source folder: {Path}", sourceFolder);
                 progress?.Report($"Access denied: {sourceFolder}");
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or ArgumentException or SecurityException)
             {
                 _logger.LogError(ex, "Error scanning source folder: {Path}", sourceFolder);
                 progress?.Report($"Error scanning: {sourceFolder}");
@@ -265,7 +266,7 @@ public class GameScannerService : IGameScannerService
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
                 {
                     _logger.LogWarning(ex, "Error reading collection folder: {Path}", subdir);
                 }
@@ -295,7 +296,7 @@ public class GameScannerService : IGameScannerService
                 return await _thumbnailService.ExtractThumbnailAsync(videoFile, cacheDir, cancellationToken).ConfigureAwait(false);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
         {
             _logger.LogWarning(ex, "Failed to extract thumbnail from video in folder: {Folder}", itemFolder);
         }
@@ -367,7 +368,7 @@ public class GameScannerService : IGameScannerService
 
                 return (totalSize, hasLargeFiles);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
             {
                 _logger.LogWarning(ex, "Error getting folder stats: {Path}", folderPath);
                 return (0L, false);
@@ -404,7 +405,7 @@ public class GameScannerService : IGameScannerService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
         {
             _logger.LogWarning(ex, "Error reading categories for: {Path}", gameFolderPath);
         }
@@ -443,7 +444,7 @@ public class GameScannerService : IGameScannerService
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
             _logger.LogWarning(ex, "Error searching for cover image in: {Path}", gameFolderPath);
         }

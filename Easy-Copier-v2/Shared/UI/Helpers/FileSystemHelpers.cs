@@ -1,3 +1,5 @@
+using System.Security;
+
 namespace EasyCopier.Shared.UI.Helpers;
 
 /// <summary>
@@ -43,7 +45,7 @@ public static class FileSystemHelpers
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SecurityException or ArgumentException)
             {
                 // Ignore access-denied or transient I/O exceptions on individual directories.
             }

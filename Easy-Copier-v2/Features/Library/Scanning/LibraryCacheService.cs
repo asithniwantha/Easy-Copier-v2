@@ -1,3 +1,4 @@
+using System.Security;
 using System.Text.Json;
 using EasyCopier.Features.Library.Models;
 using EasyCopier.Features.Shell.Contracts;
@@ -98,7 +99,7 @@ public class LibraryCacheService : ILibraryCacheService
             _logger.LogWarning(ex, "Cache file is corrupt or malformed at {Path}", cachePath);
             return null;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or NotSupportedException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Error loading cache from {Path}", cachePath);
             return null;
@@ -135,7 +136,7 @@ public class LibraryCacheService : ILibraryCacheService
                 {
                     File.Delete(tempPath);
                 }
-                catch
+                catch (Exception cleanupEx) when (cleanupEx is IOException or UnauthorizedAccessException)
                 {
                     // Ignore cleanup errors
                 }
@@ -158,7 +159,7 @@ public class LibraryCacheService : ILibraryCacheService
                 _logger.LogInformation("Cache invalidated at {Path}", cachePath);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
             _logger.LogWarning(ex, "Error invalidating cache at {Path}", cachePath);
         }
@@ -246,7 +247,7 @@ public class LibraryCacheService : ILibraryCacheService
                     _logger.LogDebug("Item inaccessible (treating as changed): {Path}", item.FolderPath);
                     changedItems.Add(normalizedPath);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is IOException or ArgumentException or SecurityException)
                 {
                     _logger.LogWarning(ex, "Error validating item (treating as changed): {Path}", item.FolderPath);
                     changedItems.Add(normalizedPath);
@@ -272,7 +273,7 @@ public class LibraryCacheService : ILibraryCacheService
                         _ = currentTopLevelItems.Add(NormalizePath(subdir));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
                 {
                     _logger.LogWarning(ex, "Error enumerating source folder (invalidating cache): {Path}", sourceFolder);
                     return new CacheValidationOutcome(CacheValidationResult.ItemsChanged, []);
@@ -313,7 +314,7 @@ public class LibraryCacheService : ILibraryCacheService
             _logger.LogInformation("Cache validation successful: no changes detected");
             return new CacheValidationOutcome(CacheValidationResult.Valid, []);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or SecurityException)
         {
             _logger.LogError(ex, "Error during cache validation");
             return new CacheValidationOutcome(CacheValidationResult.CorruptOrInvalid, []);
@@ -340,7 +341,7 @@ public class LibraryCacheService : ILibraryCacheService
                     string normalizedPath = NormalizePath(entry.FolderPath);
                     fingerprints[normalizedPath] = fingerprint;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException or SecurityException)
                 {
                     warningMessage = $"Warning: Could not compute fingerprint for {entry.Name}: {ex.Message}";
                     _logger.LogWarning(ex, "Could not compute fingerprint for {Name}", entry.Name);
@@ -367,7 +368,7 @@ public class LibraryCacheService : ILibraryCacheService
             await SaveCacheAsync(snapshot).ConfigureAwait(false);
             return warningMessage;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or NotSupportedException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Failed to save cache snapshot");
             return $"Failed to save cache: {ex.Message}";

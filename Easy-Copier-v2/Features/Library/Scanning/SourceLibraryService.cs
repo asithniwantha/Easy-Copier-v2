@@ -1,3 +1,4 @@
+using System.Security;
 using EasyCopier.Shared.Models;
 using EasyCopier.Shared.Platform;
 
@@ -39,7 +40,7 @@ public class SourceLibraryService : ISourceLibraryService
                 {
                     return File.ReadAllText(reqFilePath);
                 }
-                catch
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException)
                 {
                     return "Error reading system requirements.";
                 }

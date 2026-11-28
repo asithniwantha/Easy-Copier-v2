@@ -117,7 +117,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
 
             _logger.LogInformation("CopyHistory DB initialized at {Path}", _connectionFactory.DatabasePath);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to initialize CopyHistory DB at {Path}", _connectionFactory.DatabasePath);
         }
@@ -230,7 +230,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
 
             _ = await command.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to add copy history record for {GameName}", record.GameName);
         }
@@ -264,7 +264,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to execute query on copy history records");
         }
@@ -362,7 +362,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 return (reader.GetInt32(0), reader.GetInt32(1), reader.GetInt64(2), reader.GetInt32(3));
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to compute stats for date range {Start} - {End}", startDate, endDate);
         }
@@ -515,7 +515,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
 
             return new PagedResult<CopyHistoryRecord>(records, totalCount, page, pageSize);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to fetch paginated copy history records (page {Page}, size {Size})", page, pageSize);
             return new PagedResult<CopyHistoryRecord>([], 0, page, pageSize);
@@ -557,7 +557,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 return (reader.GetInt32(0), reader.GetInt32(1), reader.GetInt64(2), reader.GetInt32(3));
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to compute filtered history stats");
         }
@@ -602,7 +602,7 @@ public sealed class CopyHistoryService : ICopyHistoryService, IRecipient<Transfe
                 }
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SqliteException or IOException or InvalidOperationException or FormatException)
         {
             _logger.LogError(ex, "Failed to fetch all filtered history records");
         }

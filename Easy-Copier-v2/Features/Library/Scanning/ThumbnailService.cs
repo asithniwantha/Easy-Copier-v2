@@ -1,5 +1,7 @@
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using EasyCopier.Shared.Interop;
@@ -86,7 +88,7 @@ public class ThumbnailService : IThumbnailService, IDisposable
                 {
                     _logger.LogInformation("File {FilePath} does not support IShellItemImageFactory. Falling back to StorageFile.GetThumbnailAsync...", sourceFilePath);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException or ArgumentException)
                 {
                     _logger.LogWarning(ex, "Error during Shell extraction for {FilePath}. Falling back...", sourceFilePath);
                 }
@@ -108,7 +110,7 @@ public class ThumbnailService : IThumbnailService, IDisposable
                     _logger.LogWarning("Fallback failed to extract a valid thumbnail for {FilePath}. Attempting NReco FFMpeg extraction...", sourceFilePath);
                     return ExtractWithFFMpeg(sourceFilePath, cacheFilePath);
                 }
-                catch (Exception winrtEx)
+                catch (Exception winrtEx) when (winrtEx is ExternalException or IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException or NotSupportedException)
                 {
                     _logger.LogWarning(winrtEx, "WinRT Fallback error extracting thumbnail for {FilePath}. Attempting NReco FFMpeg extraction...", sourceFilePath);
                     return ExtractWithFFMpeg(sourceFilePath, cacheFilePath);
@@ -119,7 +121,7 @@ public class ThumbnailService : IThumbnailService, IDisposable
         {
             return null;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is ExternalException or IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException or FFMpegException)
         {
             _logger.LogWarning(ex, "General error extracting thumbnail for {FilePath}", sourceFilePath);
             return null;
@@ -141,7 +143,7 @@ public class ThumbnailService : IThumbnailService, IDisposable
             image.Save(cacheFilePath, ImageFormat.Jpeg);
             return cacheFilePath;
         }
-        catch (Exception ffmpegEx)
+        catch (Exception ffmpegEx) when (ffmpegEx is FFMpegException or ExternalException or Win32Exception or IOException or UnauthorizedAccessException or ArgumentException or InvalidOperationException)
         {
             _logger.LogWarning(ffmpegEx, "NReco FFMpeg Fallback error extracting thumbnail for {FilePath}", sourceFilePath);
             return null;

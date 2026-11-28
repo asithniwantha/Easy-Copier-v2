@@ -1,3 +1,4 @@
+using System.Security;
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -99,7 +100,7 @@ public class SettingsService : ISettingsService
             _cachedSettings = settings;
             return settings;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or NotSupportedException or ArgumentException or SecurityException)
         {
             _logger.LogError(ex, "Error loading settings from {Path}", settingsPath);
             _cachedSettings = new AppSettings();
@@ -132,7 +133,7 @@ public class SettingsService : ISettingsService
             _cachedSettings = settings ?? new AppSettings();
             return _cachedSettings;
         }
-        catch
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException or NotSupportedException or ArgumentException or SecurityException)
         {
             _cachedSettings = new AppSettings();
             return _cachedSettings;

@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EasyCopier.Shared.Platform;
@@ -83,7 +84,7 @@ public partial class AboutViewModel : CloseableViewModelBase
             _clipboardService.SetText($"Easy Copier v{AppVersion}\nOS: {Environment.OSVersion}\nRuntime: .NET {Environment.Version}");
             IsCopied = true;
         }
-        catch
+        catch (Exception ex) when (ex is COMException or InvalidOperationException or UnauthorizedAccessException or ReflectionTypeLoadException)
         {
             IsCopied = false;
         }

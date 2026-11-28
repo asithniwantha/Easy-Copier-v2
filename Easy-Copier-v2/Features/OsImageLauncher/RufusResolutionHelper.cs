@@ -1,3 +1,4 @@
+using System.Security;
 using System.Text.RegularExpressions;
 using EasyCopier.Features.Shell.Contracts;
 
@@ -74,7 +75,7 @@ public static partial class RufusResolutionHelper
                 return candidates[0].FileInfo.FullName;
             }
         }
-        catch
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or SecurityException or RegexMatchTimeoutException)
         {
             // Fall back to expandedPath on directory access errors.
         }

@@ -1,3 +1,4 @@
+using System.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
@@ -71,7 +72,7 @@ public sealed class StartupService : IStartupService
                 _logger.LogInformation("Removed {AppName} from startup registry.", AppName);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException or IOException or ObjectDisposedException or ArgumentException)
         {
             _logger.LogError(ex, "Error updating startup registry key.");
         }
